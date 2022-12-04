@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      
+		<title>Creating an SSIS Connection Independent of Machine Architecture</title>
+		<link href='../qunect.css' rel='stylesheet' type="text/css" />		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+	    <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Creating an SSIS Connection Independent of Machine Architecture</p>	
+		<div class=bar></div>		<p class=normal>Learn how to <a href="configure.html">configure your QuNect ODBC for QuickBase DSN</a></p>		<div class="youtube" >			<iframe width="1920" height="1080" src="https://www.youtube.com/embed/IM8M0cwS_5k" frameborder="0" allowfullscreen></iframe>						</div>		<p class=normal>QuNect ODBC for QuickBase creates four skeleton DSNs upon installation. 		Two user DSNs and two system DSNs. When creating SSIS packages you must use system DSNs because inevitably you will		schedule the package to be run by a service like SQL Agent that does not run under your MS Windows credentials. User DSNs are only		visible to the MS Windows login that created them. System DSNs are visible to all MS Windows users.		The QuNect ODBC for QuickBase installer names the two system DSNs, "QuickBase via QuNect 32 bit" and "QuickBase via QuNect 64 bit".		If you create your SSIS connection using the "QuickBase via QuNect 32 bit" DSN in Visual Studio, which is a 32 bit application, then when you try to run the SSIS package 		in a 64 bit environment like SQL Agent, you will get an architecture mismatch error. One solution to this problem is to create two DSNs that have the same name.		One in the 32 bit ODBC administrator control panel and the other one in the 64 bit ODBC administrator control panel. But a more robust way to accomplish		machine architecture independence is to use a DSN-less connection. This is accomplished by using a connection string that refers to the driver as "QuNect ODBC for QuickBase".		Both the 64 bit and 32 bit version of QuNect ODBC for QuickBase use the same name. The connection string is stored inside your SSIS package and this removes your package's dependence on		an external DSN. All your package requires is that QuNect ODBC for QuickBase be installed on the machine it's running on. No need to configure any DSNs.</p>
+	</body>
+</html>
+

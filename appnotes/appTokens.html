@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Application Tokens</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Application Tokens</p>
+        <p class=normal>
+            When you read this, application tokens may already be required for
+            all Quickbase applications. Application tokens are a security feature.
+            They are like an extra password that pieces of software that want to
+            interact with Quickbase applications must present to the Quickbase application
+            before the application will grant them access through the Quickbase HTTP API.
+            Since QuNect ODBC for QuickBase communicates with Quickbase applications through
+            the Quickbase HTTP API it must present an application token. Obviously
+            not just any application token will work because there wouldn't be much security in that.
+            So the question is how does an application decide whether a particular
+            application token is legitimate. Well that's easy. For a brand new Quickbase application
+            no application tokens qualify. This means that no software can communicate with
+            that application yet, including QuNect ODBC for QuickBase. To remedy this situation you'll
+            need to install an application token in your application. Go to your application's 
+            home page and click on the <strong>Settings</strong> menu. Then select
+            <strong>Application</strong>. Then click on <strong>Advanced Settings</strong>.
+            To the right you'll see <strong>Application Tokens</strong>. Click on 
+            <strong>Manage Application Tokens</strong>. You see a button at the top center of the
+            page labeled <strong>Assign Application Token</strong>. Click on this button and you'll
+            have two options: <strong>Assign Existing Token</strong> or <strong>Create New Token</strong>.
+            Since this is our first application token we need to click on <strong>Create new Token</strong>.
+            You'll be prompted for a description. You could type in <strong>QuNect</strong> here. Click OK
+            and you've created your first application token. You'll see it listed in the table below the
+            button. Now you'll need to copy the application token itself which is the nonsense string of characters
+            in the first column of the table to the clipboard.
+        </p>
+        <p class=normal>
+            After installing QuNect ODBC for QuickBase you should enter your
+            Quickbase username, password and application token for the two Data Sources that were created
+            by the installation process. Click on the <strong>Start Menu</strong>
+            and click on the <strong>Control Panel</strong>. Then click on
+            <strong>Administrative Tools</strong>. Then click on
+            <strong>Data Sources (ODBC)</strong>. Alternatively you can click on the
+            <strong>Start Menu</strong>, then click on <strong>Run...</strong>, then type
+            in <strong>odbcad32</strong> and finally click <strong>OK</strong>.
+        </p>
+         <p class=normal>
+            Either way you'll end up at the dialog below:
+         </p>
+         <img src="i/odbcad32.gif">
+        <p class=normal>
+            Double click on <strong>QuickBase via QuNect</strong>. You'll see the following
+            dialog pop up.
+        </p>
+        <img src="i/configure.gif">
+        <p class=normal>
+            Enter your Quickbase username and password or <a href="/flash/UserToken.html">usertoken</a>.
+		</p>
+        <p class=normal>
+			Make sure to enter a value for the <a href="/flash/QuickBaseServer.html">QuickBase Server</a> property.            
+        </p>
+        <p class=normal>
+            You can use a preexisting application token by reading the instructions on
+            <a href="https://help.quickbase.com/user-assistance/app_tokens.html#assign">how to use an existing application
+            token</a>. If you use a usertoken instead of a password you don't need to supply an application token.
+            Please read the section entitled <strong>Create and assign an application token</strong>
+            on the Quickbase help page entitled <a href="https://help.quickbase.com/user-assistance/app_tokens.html">Application Tokens</a>.
+            Click <strong>OK</strong> to
+            save this information.
+            Your <strong>User DSN</strong> is now configured.            
+        </p>
+         <p class=normal>
+            Now let's move on to your <strong>System DSN</strong>.
+            Back in the
+            <strong>ODBC Data Source Administrator</strong> dialog, click on the
+            <strong>System DSN</strong> tab. Then double click on <strong>QuickBase via QuNect</strong>.
+            Enter the same information as above. Click <strong>OK</strong> to
+            save this information. Congratulations! Your <strong>QuickBase via QuNect</strong> DSNs are fully configured.
+        </p>
+         <img src="i/systemDSN.gif">
+</body>
+</html>
+
+               

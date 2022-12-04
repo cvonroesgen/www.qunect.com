@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Copying Records from SQL Server to Quickbase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Copying Records from SQL Server to Quickbase</p>
+        <p class=normal>If you don't already have a linked server called QUICKBASE, create one using the instructions in the
+        <a href="uiLinkedServer.html">Creating a Linked Server for Quickbase in SQL Server Using the UI</a> application note.
+        You can get a list of all Quickbase tables you have access to by following the instructions in the
+        <a href="listTablesSQLServer.html">Listing All Quickbase Tables in SQL Server</a> application note. Let's say one of your Quickbase
+        tables is called <strong>Acme Pipeline: Customers bbsd23jlm</strong>. Let me decode this name for you.
+        The first part of the name extends all the way to the first colon character. <strong>Acme Pipeline</strong> is the name of
+        your Quickbase application. A Quickbase application can contain one or more tables. This application has at least
+        one table in it called <strong>Customers</strong>. The last part of the name is the DBID of the table.
+        The DBID uniquely identifies the table amongst all tables (yours and everyone elses) in Quickbase.
+        Now let's say you have a table in SQL Server of customer information using the same field names in Quickbase.
+        To copy all the fields of all the rows in the SQL customer table called: <strong>Customers</strong> you can run the following SQL.
+        This SQL statement uses the four part name convention. This first part of the name is the linked server. The second part
+        is the catalog on the linked server where the table resides. Catalogs equate to Quickbase applications.
+        The third part of the name is left blank. And the last or fourth part of the name is the DBID of the Quickbase table.</p>
+<p class=code>
+<pre>
+INSERT INTO QUICKBASE."ACME_Pipeline".."bbsd23jlm" ("First_Name", "Last_Name") SELECT "First Name", "Last Name" FROM dbo.Customers 
+</pre>
+</p>
+<p class=normal>
+    Unfortunately due to a limitation of the OLE DB Provider for ODBC that
+    Microsoft supplies with SQL Server, SQL Server cannot update or insert into Quickbase Multi-line text fields (BLOB columns).
+    As a result the QuNect ODBC for QuickBase driver automatically sets the size of all multi-line text fields to 8000.
+    This ensures that by default all text fields appear to SQL Server to be non BLOB columns.
+</p>
+</body>
+</html>
+
+               

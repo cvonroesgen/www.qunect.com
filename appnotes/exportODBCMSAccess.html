@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Exporting a table via QuNect ODBC for QuickBase from MS Access</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Exporting a table via QuNect ODBC for QuickBase from MS Access</p>
+        <p class=normal>
+            MS Access tables with <strong>Number</strong> fields of type <strong>Replication ID</strong> cannot be exported. As long as your MS Access table
+            does not make use of this type of number field your export will work if you follow the instructions below.
+            To create a table in Quickbase you need to specify which application the table should be created in.
+            Each Quickbase application has a <a href="appid.html">appid</a> associated with it.
+            Read the <a href="appid.html">How to Find the APPID of a Quickbase Application</a> to determine the appid of your application.
+            If you wanted to create a table called <strong>CUSTOMERS</strong> in the application whose appid was <strong>bcks8a7y3</strong>
+            you would use the following table name when prompted:
+        </p>
+<p class=code>
+<pre>
+CUSTOMERS bcks8a7y3
+</pre>
+</p>
+<p class=normal>
+    Like this:
+</p>
+<p class=normal>
+    <img src="i/makeTable.PNG" />
+</p>
+</body>
+</html>
+
+               

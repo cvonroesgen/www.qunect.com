@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Mirroring all your Quickbase tables in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Mirroring all Quickbase tables in SQL Server</p>
+        <p class=normal>The following stored procedure will copy all your tables from Quickbase to SQL Server.
+        If a table already exists it will drop (delete) the table and recreate it.</p>
+<p class=code>
+<pre>
+set ANSI_NULLS ON
+set QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Claude von Roesgen
+-- Create date: 1/7/2008
+-- Description:	Mirror all Quickbase tables and convert text fields to nvarchar(max)
+-- =============================================
+-- This stored procedure depends on the existence of a linked server called
+-- Quickbase. To create this linked server run the following SQL:
+--
+-- EXEC sp_addlinkedserver 
+-- @server = 'QuickBase', 
+-- @provider = 'MSDASQL',
+-- @srvproduct = 'QuNect',
+-- @provstr = 'DRIVER={QuNect ODBC for QuickBase};UID=YourQuickBaseEmailOrScreenName;PWD=YourPassword' 
+-- GO
+--
+-- After you have your linked server in place you're ready to run the stored 
+-- procedure below. 
+CREATE PROCEDURE [dbo].[mirrorAllQuickBaseTables] 
+AS
+BEGIN
+	SET NOCOUNT ON;
+	if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_tables]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	drop table [dbo].[qunect_tables]
+
+	CREATE TABLE [dbo].[qunect_tables] (
+		[TABLE_QUALIFIER] [nvarchar] (128) NULL ,
+		[TABLE_OWNER] [nvarchar] (128) NULL ,
+		[TABLE_NAME] [nvarchar] (128) NULL ,
+		[TABLE_TYPE] [nvarchar] (128) NULL ,
+		[REMARKS] [varchar] (254) NULL
+	) ON [PRIMARY]
+
+	INSERT qunect_tables EXEC sp_tables_ex quickbase
+	DECLARE @dbid nvarchar(128)
+	DECLARE table_cursor CURSOR FOR SELECT TABLE_NAME FROM qunect_tables
+	OPEN table_cursor
+	FETCH NEXT FROM table_cursor INTO @dbid
+	WHILE (@@FETCH_STATUS <> -1)
+	BEGIN		
+		IF (@@FETCH_STATUS <> -2)
+		BEGIN
+			PRINT 'Mirroring ' + @dbid
+			BEGIN
+				DECLARE @doesExist int
+				SELECT @doesExist = count(*) FROM sysobjects Where Name = @dbid AND xType= 'U'
+				IF @doesExist > 0 
+				BEGIN
+					EXEC('DROP TABLE "'+@dbid+'"')
+				END
+				BEGIN TRY
+					EXEC('SELECT * INTO "'+@dbid+'" FROM OPENQUERY(QUICKBASE, ''select * from "'+@dbid+'"'')')
+				END TRY
+				BEGIN CATCH
+					PRINT 'Could not mirror table ' + @dbid + ' ' + ERROR_MESSAGE()
+				END CATCH
+			END
+		END
+		FETCH NEXT FROM table_cursor INTO @dbid
+	END
+	DEALLOCATE table_cursor   
+END
+</pre>
+</p>
+    </body>
+</html>
+
+               

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Creating a Data Source for Quickbase in SQL Server Integration Services (SSIS)</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Creating a Data Source for Quickbase in SQL Server Integration Services (SSIS)</p>
+        <p class=normal>
+            To create a data source for Quickbase just open up SQL Server Business Intelligence Development Studio
+            and click on the <strong>Project</strong> menu.
+            Then click on <strong>Add New Item...</strong>. Then click on the 
+            <strong>Data Source</strong> icon. Then click the <strong>Add</strong> button.
+            In the wizard click on the <strong>Next</strong> button.
+            Under <strong>Data Connections</strong> choose <strong>QuickBase via QuNect 64 bit</strong> or <strong>QuickBase via QuNect 32 bit</strong> if you're on a 32 bit operating system.
+            Click <strong>Next</strong> and then <strong>Finish</strong>.
+            In the <strong>Solution Explorer</strong> under <strong>Data Sources</strong>
+            you will see <strong>QuickBase via QuNect.cls</strong>.
+            Double click to open up its properties. Make sure its properties look like the figure below.
+        </p>
+        <img src="i/SSISDataSourceDesigner.gif">
+        <p class=normal>
+            You'll need to edit the connection string. Under the <strong>Data source specification</strong>
+            click the <strong>connection string</strong> radio button. Enter the following connection string
+            <strong>Dsn=QuickBase via QuNect;</strong> as you see in the figure below.
+            When you install QuNect ODBC for QuickBase it created DSNs (Data Source Names) for
+            you that are called <strong>QuickBase via QuNect</strong>. These data sources are not
+            configured with a username and password until you enter them manually. Please watch the <a href="/flash/configure.html">getting
+            started application note</a> to learn how to configure your DSNs with a username and password. If you don't have
+            a username and password for the QuickBase via QuNect system DSN then your Data Source will not work properly unless you enter a username
+            and password in the Connection Manager.
+        </p>
+        <img src="i/SSISConnectionManager.gif">
+</body>
+</html>
+
+               

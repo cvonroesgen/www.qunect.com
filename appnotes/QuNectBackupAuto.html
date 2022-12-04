@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Automating QuNect Backup using Windows Scheduler</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect Backup</p>
+		<div class=bar></div>
+        <p class=subhead>Automating QuNect Backup using Windows Scheduler</p>
+        
+        <p class=normal>
+            <ol>
+            <li>
+            The first step is to install QuNect ODBC for QuickBase from this <a href="http://qunect.com/download/QuNect.exe">link</a>.
+            </li>
+            <li>
+            The second step is to <a href="/download/QuNectBackup/setup.exe">install QuNect Backup</a>
+            from this <a href="/download/QuNectBackup/setup.exe">link</a>.
+            This will make sure that your computer has all the .NET prerequisites and will put a shortcut on 
+            your Start menu. However the <a href="/download/QuNectBackup/QuNectBackup.exe">QuNectBackup.exe</a>
+            executable is buried in some inscrutable location.
+            This makes it hard to configure Windows Scheduler. 
+            </li>
+            <li>
+            So to make it easier you can download
+            <a href="/download/QuNectBackup/QuNectBackup.exe">QuNectBackup.exe</a> from
+            this <a href="/download/QuNectBackup/QuNectBackup.exe">link</a>. Place it on your hard drive
+            where you can browse to it easily. I would recommend putting it in
+            <strong>C:\Program Files\QuNect ODBC for QuickBase</strong> or on 64 bit machines in
+            <strong>C:\Program Files (x86)\QuNect ODBC for QuickBase</strong>. The following instructions will assume you've done so.
+            </li>
+            </ol>
+        </p>
+       
+        
+        <p class=subhead>Windows 7</p>
+        <p class=normal>
+         Open Task Scheduler by clicking <b>Start</b>,
+                    click <b>All Programs</b>, point to <b>Accessories</b>, point to <b>System Tools</b>,
+                    and then click <b>
+                        Task Scheduler</b>.<br />
+                    <br />
+        <ol>
+            <li>On the <strong>Action</strong> menu select <strong>Create Task</strong></li>
+            <li>On the <strong>General</strong> tab give your task a name.</li>
+            <li>on the <strong>Actions</strong> tab click New... and then click <b>Browse</b>,
+                navigate to <strong>C:\Program Files\QuNect ODBC for QuickBase</strong>
+                or on 64 bit machines to
+                <strong>C:\Program Files (x86)\QuNect ODBC for QuickBase</strong> and then click
+                on <b>QuNectBackup</b> and then click <b>Open</b>.</li>
+            <li>In the input box labeled <strong>Add Arguments (optional)</strong> you will add nine command line arguments.
+				<ol>
+					<li>The full path to the folder that will receive the .csv files and the .fids files. You will want to enclose this in double quotes.
+					The path should not end with a trailing backslash.
+					</li>
+					<li>A semicolon delimited list of the <a href="/appnotes/dbid.html">dbids</a> that should be backed up. Or specify "all" to backup all the tables the user token has access to.</li>
+					<li>Quickbase username</li>
+					<li>Quickbase <a href="/flash/UserToken.html">usertoken</a> for the above user</li>
+					<li>The Quickbase host name for your realm. For example <strong>mycompany.quickbase.com</strong></li>
+					<li>A "1" if you need to use a proxy server to connect to the Internet, otherwise "0"</li>
+					<li>A "1" to create a separate folder for each day, otherwise "0"</strong></li>
+					<li>A "1" to create a separate folder for each Quickbase application, otherwise "0"</strong></li>
+					<li>A 0, 1, 2, or 3 to configure the download of file attachments.
+						<ul>
+							<li>"0" to prevent attached files from being backup up.</li>
+							<li>"1" to download current revision and current rev file URL in CSV.</li>
+							<li>"2" to download all revisions and current rev file URL in CSV.</li>
+							<li>"3" to download all revisions and all file URLs in CSV.</li>
+						</ul>					
+					</li>
+				</ol>
+				<ul>
+					<li>Here's an example of the arguments portion of the command line</li>
+					<li><pre>"C:\Users\claude\Downloads\task" bc45c8xjj;bc45c8xjk claude@qunect.com ked_bahz_cabbtdzb3wmjaabj9vsnjaabrwi5 qunect.quickbase.com 0 0 0 3</pre></li>
+				</ul>
+            </li>
+			<li>You can learn about the other features of Windows Task Scheduler
+                <a href="http://windows.microsoft.com/en-US/windows7/schedule-a-task">here</a>.</li>
+        </ol>
+        </p>
+        
+</body>
+</html>
+
+               

@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Copying File Attachments from one QuickBase Table to another QuickBase Table</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Copying File Attachments from one QuickBase Table to another QuickBase Table</p>
+        <p class=normal>A single SQL statement will allow you to copy file attachments from one QuickBase table to another.</p>
+<p class=normal>
+First configure your DSN to represent file attachment fields as a <strong>Text field with URL to file attachment in QuickBase</strong>.
+Then write and execute a SQL statement like this:
+</p>
+<p class=subhead>
+    SQL Server Syntax
+</p>   
+<pre>
+INSERT INTO QUICKBASE."ACME_Pipeline".."QuickBase_Destination_Table_bbsd23jlm" ("Destination Key Field Name", "Destination File Attachment Field") SELECT "Source Key Field Name", "Source File Attachment Field" FROM QUICKBASE."ACME_Pipeline".."QuickBase_Source_Table_bbsd23kvh"
+</pre>
+<p class=subhead>
+    ODBC SQL Syntax
+</p>   
+<pre>
+INSERT INTO "QuickBase_Destination_Table_bbsd23jlm" ("Destination Key Field Name", "Destination File Attachment Field") SELECT "Source Key Field Name", "Source File Attachment Field" FROM "QuickBase_Source_Table_bbsd23kvh"
+</pre>
+<p class=normal>
+You can add a <strong>WHERE</strong> clause to the end of either of the above SQL statements to restrict which record's files are copied.
+Including the key field will cause existing records to be updated. 
+If the key field in the destination table is the built-in <strong>Record ID#</strong> field then you should not include the key field unless there is a strict one to one correspondence between the key values in both tables.
+</p>
+
+    </body>
+</html>
+
+               

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Writing a Simple Select Statement for Quickbase in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Writing a Simple Select Statement for Quickbase in SQL Server</p>
+        <p class=normal>If you don't already have a linked server called QUICKBASE, create one using the instructions in the
+        <a href="uiLinkedServer.html">Creating a Linked Server for Quickbase in SQL Server Using the UI</a> application note.
+        You can get a list of all Quickbase tables you have access to by following the instructions in the
+        <a href="listTablesSQLServer.html">Listing All Quickbase Tables in SQL Server</a> application note. Let's say one of your Quickbase
+        tables is called <strong>Acme Pipeline: Customers bbsd23jlm</strong>. Let me decode this name for you.
+        The first part of the name extends all the way to the first colon character. <strong>Acme Pipeline</strong> is the name of
+        your Quickbase application. A Quickbase application can contain one or more tables. This application has at least
+        one table in it called <strong>Customers</strong>. The last part of the name is the DBID of the table.
+        The DBID uniquely identifies the table amongst all tables (yours and everyone elses) in Quickbase.
+        To access all the fields of all the rows in the <strong>Customers</strong> table of this example you can run the following SQL:</p>       
+<p class=code>
+<pre>
+select * from OPENQUERY(QUICKBASE, 'SELECT * FROM "bbsd23jlm"')
+</pre>
+</p>    <p class=normal>   
+        The above is not as elegant a syntax however as the following SQL statement.
+        This following SQL statement uses the four part name convention. This first part of the name is the linked server. The second part
+        is the catalog on the linked server where the table resides. Catalogs equate to Quickbase applications.
+        The third part of the name is left blank. And the last or fourth part of the name is the DBID of the Quickbase table.
+        You can set the fourth part to just the DBID or you can precede the DBID with the table's name or any other identifiers.
+        This is useful for documentation purposes.
+        Just make sure the DBID is last and it's preceded with a space character. </p>
+<p class=code>
+<pre>
+select * from QUICKBASE."ACME Pipeline".."bbsd23jlm"
+</pre>
+</p>
+<p class=normal>
+this is equivalent:
+</p>
+<p class=code>
+<pre>
+select * from QUICKBASE."ACME Pipeline".."Opportunities bbsd23jlm"
+</pre>
+</p>
+<p class=normal>If while executing queries with four part names, you get an error message like this:</p>
+<p class=code>
+<pre>
+Invalid use of schema or catalog for OLE DB provider "MSDASQL" for linked server "QUICKBASE".
+A four-part name was supplied, but the provider does not expose the necessary interfaces to use a catalog or schema..
+</pre>
+</p>
+<p class=normal>You'll need to uncheck the <strong>Level zero only</strong> property.
+to accomplish this go to:
+<strong>SQL Management Studio -> Server Objects -> Linked Servers -> Providers</strong>
+right click on <strong>MSDASQL</strong> and select <strong>Properties</strong> and uncheck the <strong>Level zero only</strong> property.
+click on “OK” and restart the SQL Server service.<br/>
+<img src="i/levelZeroOnly.png" />
+</p>
+</body>
+</html>
+
+               

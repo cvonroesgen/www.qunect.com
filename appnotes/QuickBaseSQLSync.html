@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Synching a SQL Server table in Quickbase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Synching a SQL Server table in Quickbase</p>
+        <p class=normal>The following stored procedure will synch a table from SQL Server to Quickbase.
+        After running this stored procedure the table in Quickbase will be up to date with the table in SQL Server.
+        Records that have been deleted on SQL Server will only
+	be deleted in Quickbase if the @deleteOrphanRecords is equal to 1. If you set the @deleteOrphanRecords equal to 1
+        then there must be a checkbox field in the Quickbase table called <strong>Orphan</strong>. This checkbox field is
+        used to efficently determine which Quickbase records need to be deleted.
+        This stored procedure only modifies the Quickbase table, not the corresponding SQL Server table.
+        It has a required parameter: <strong>SQLTableName</strong>. The <strong>SQLTableName</strong>
+        should be the name of the table in SQL Server that you want to synch over to Quickbase. Another required parameter
+        is the <strong>dbid</strong> of the Quickbase table to synch information to. In addition
+        you'll need to set the required parameter <strong>QDBAppName</strong> to the name of the Quickbase application.
+        You can find the DBID of a Quickbase table by reading the
+        <a href="dbid.html">How to Find the DBID of a Quickbase Table</a> application note.
+        You'll also need to identify a field in the SQL Server table that changes whenever a
+        modification is made to any other field in the same SQL Server record. This field must be a datetime 
+        field. A typical name for this kind of field is <strong>Date Modified</strong>.
+        This SQL Server field's name should become the value of the required parameter
+        called <strong>SQLDateModifiedFieldName</strong>. Next you'll need to identify a field in the
+        corresponding Quickbase table that is also a <strong>Date / Time</strong> field. 
+        The name of this field should become 
+        the value of the required parameter <strong>QuickBaseDateModifiedFieldName</strong>. 
+        Every Quickbase table comes with five
+        built-in fields. One of these is a <strong>Date / Time</strong> called <strong>Date Modified</strong>.
+        This is a read-only field and only Quickbase modifies the value of this field when other field values change.
+        The parameter <strong>QuickBaseDateModifiedFieldName</strong> should never be set to the name of this field.
+        You must use another user created <strong>Date / Time</strong> field.
+        Another pair of field names need to be specified.
+        The key field in SQL Server <strong>SQLKey</strong> and the copy of this key field in
+        Quickbase <strong>QDBKey</strong>. They need to be of the same type of course.
+        Also the key field of the Quickbase table should be set to
+        <strong>QDBKey</strong>. 
+        Then you'll need to specify two comma delimited lists of fields names.
+        <strong>QuickBaseFieldList</strong> and <strong>SQLFieldList</strong>. These two field lists need to
+        have the same number of fields in them and they have to have matching field types. They should not contain
+        the fields defined previously as <strong>SQLKey</strong> and <strong>QDBKey</strong>.
+        Field names within these comma separated lists will have to be double quote enclosed.
+        </p>
+<p class=code>
+<pre>
+set ANSI_NULLS ON
+set QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Claude von Roesgen Copyright 2008
+-- Create date: 01/11/2008
+-- Description:	Synchronize a table from SQL Server to Quickbase.
+--				This stored procedure depends on the existance of a linked server called
+--				Quickbase. To create this linked server run the following SQL:
+--
+--					EXEC sp_addlinkedserver 
+--					@server = 'QuickBase', 
+--					@provider = 'MSDASQL',
+--					@srvproduct = 'QuNect',
+--					@provstr = 'DSN=QuickBase via QuNect;UID=claude;PWD=YourPassword' 
+--					GO
+--
+--              After you have your linked server in place you're ready to run the stored 
+--				procedure below. Both the SQL Server table and the Quickbase table must preexist.
+--				Only the records that have been modified since the last
+--				sync will be imported. Records that have been deleted on SQL Server will only
+--				be deleted in Quickbase if the @deleteOrphanRecords is equal to 1.
+--				You must double quote enclose field names within the @SQLFieldList and @QuickBaseFieldList parameters.
+--				For example you must refer to Date Created as "Date Created". 
+--				Since field names are easily changed in Quickbase you may want to refer to the fields 
+--				by their field identifiers instead of their field labels. The field identifiers never
+--				change, even when the field name is changed.
+-- =============================================
+CREATE PROCEDURE [dbo].[SyncSQLServerQuickBaseTable]
+@SQLTableName VarChar(255),
+@QDBAppName VarChar(255),
+@dbid VarChar(255),
+@SQLDateModifiedFieldName VarChar(255),
+@QuickBaseDateModifiedFieldName VarChar(255),
+@SQLKey VarChar(255),
+@QDBKey VarChar(255),
+@SQLFieldList VarChar(8000),
+@QuickBaseFieldList VarChar(8000),
+@deleteLocalOrphanRecords bit = 1
+AS
+BEGIN
+	BEGIN
+		SET ANSI_NULLS ON
+		SET QUOTED_IDENTIFIER ON
+
+		-- Find the latest date modified of the Quickbase records
+		-- and then do an inner join with SQL Server records to see which records have
+		-- changed on the SQL Server server since the last synch. Delete those records 
+		-- in Quickbase and then refetch them from SQL Server and put them back into Quickbase.
+		DECLARE @insertSQL VarChar(8000)
+		SET @insertSQL = '
+		DECLARE @maxQDBDateModified datetime
+		SELECT @maxQDBDateModified = maxQDB FROM OPENQUERY(QUICKBASE, ''SELECT TOP 1 "'+@QuickBaseDateModifiedFieldName+'" as maxQDB FROM "'+@dbid+'" ORDER BY "'+@QuickBaseDateModifiedFieldName+'" DESC'')
+		print ''Looking for SQL records modified on or after: '' 
+		SET @maxQDBDateModified = ISNULL(@maxQDBDateModified, ''1900-1-1'')
+		print @maxQDBDateModified
+		INSERT INTO Quickbase."' + @QDBAppName + '".."'+@dbid+'" ("' + @QDBKey + '",' + @QuickBaseFieldList + ') SELECT "' + @SQLKey + '",' + @SQLFieldList + ' FROM "' + @SQLTableName + '"
+		WHERE "'+@SQLDateModifiedFieldName+'" >= @maxQDBDateModified
+		'
+		PRINT @insertSQL
+		EXEC(@insertSQL)
+	END
+	-- Now look for all orphaned records using an outer join
+	-- and delete the orphans.
+	DECLARE @deleteSQL VarChar(8000)
+	if @deleteLocalOrphanRecords = 1		
+	BEGIN
+            -- Mark all records in Quickbase as orphans
+            PRINT 'Marking all records as orphans'
+            SET @deleteSQL = 'SELECT * FROM OPENQUERY(QUICKBASE, ''UPDATEOQ "'+@dbid+'" SET Orphan = 1'')'
+            EXEC(@deleteSQL)
+            -- Now mark all records in Quickbase that are also in SQL Server as not orphans
+            PRINT 'Selectively marking records as non-orphans'
+            SET @deleteSQL = 'INSERT INTO Quickbase."' + @QDBAppName + '".."'+@dbid+'" ("' + @QDBKey + '", Orphan) SELECT "' + @SQLKey + '", 0 FROM "' + @SQLTableName + '"'
+            EXEC(@deleteSQL)
+            -- Now delete all records in Quickbase marked as orphans
+            SET @deleteSQL = 'SELECT * FROM OPENQUERY(QUICKBASE, ''DELETEOQ FROM "'+@dbid+'" WHERE Orphan = 1'')'
+            EXEC(@deleteSQL)
+	END
+END
+</pre>
+</p>
+    </body>
+</html>
+
+               

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Working with Tableau</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Working with Tableau</p>
+        <p class=normal>
+        Please right click on the following link and choose <strong>Save As..</strong> to download and place this <a href="https://qunect.com/appnotes/QuNect.tdc">QuNect.tdc file</a>
+             in your <strong>Documents\My Documents\My Tableau Repository\Datasources</strong> folder.
+			 To understand more about this <a href="https://qunect.com/appnotes/QuNect.tdc">QuNect.tdc file</a> file please read <a href="http://kb.tableau.com/articles/knowledgebase/customizing-odbc-connections">Customizing and Tuning ODBC Connections</a>.
+			 The contents of this file are below if you prefer to copy and paste into your text editor:
+		<pre>
+     &lt;?xml version='1.0' encoding='utf-8' ?&gt;
+        &lt;connection-customization class='genericodbc' enabled='true' version='9.2'&gt;
+          &lt;vendor name='QuNect for QuickBase' /&gt;
+          &lt;driver name='QuNect ODBC for QuickBase' /&gt;
+          &lt;customizations&gt;
+            &lt;customization name='CAP_CREATE_TEMP_TABLES' value='no' /&gt;
+              &lt;customization name='CAP_ISOLATION_LEVEL_READ_COMMITTED' value='no' /&gt;
+              &lt;customization name='CAP_ISOLATION_LEVEL_READ_UNCOMMITTED' value='no' /&gt;
+              &lt;customization name='CAP_ISOLATION_LEVEL_REPEATABLE_READS' value='no' /&gt;
+              &lt;customization name='CAP_ISOLATION_LEVEL_SERIALIZABLE' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_DETECT_ALIAS_CASE_FOLDING' value='no' /&gt;
+            &lt;customization name='CAP_ODBC_BIND_FORCE_DATETIME_AS_CHAR' value='yes' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_FORCE_DATE_AS_CHAR' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_FORCE_MAX_STRING_BUFFERS' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_FORCE_MEDIUM_STRING_BUFFERS' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_FORCE_SIGNED' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_FORCE_SMALL_STRING_BUFFERS' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_SUPPRESS_INT64' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_SUPPRESS_PREFERRED_TYPES' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_BIND_SUPPRESS_WIDE_CHAR' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_CURSOR_DYNAMIC' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_CURSOR_FORWARD_ONLY' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_CURSOR_KEYSET_DRIVEN' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_CURSOR_STATIC' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_ERROR_IGNORE_FALSE_ALARM' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_FETCH_BUFFERS_RESIZABLE' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_FETCH_BUFFERS_SIZE_MASSIVE' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_FETCH_CONTINUE_ON_ERROR' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_STRING_LENGTH_UNKNOWN' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_EXECUTED_QUERY' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_PREPARED_QUERY' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_SELECT_STAR' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_SQLCOLUMNS_API' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_SQLFOREIGNKEYS_API' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_SQLPRIMARYKEYS_API' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_METADATA_SUPPRESS_SQLSTATISTICS_API' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_REBIND_SKIP_UNBIND' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_TRIM_VARCHAR_PADDING' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_UNBIND_AUTO' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_UNBIND_BATCH' value='no' /&gt;
+              &lt;customization name='CAP_ODBC_UNBIND_EACH' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_BOOLEXPR_TO_INTEXPR' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_FROM_REQUIRES_ALIAS' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_GROUP_ALLOW_DUPLICATES' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_GROUP_BY_ALIAS' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_GROUP_BY_DEGREE' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_HAVING_REQUIRES_GROUP_BY' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_HAVING_UNSUPPORTED' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_JOIN_ACROSS_SCHEMAS' value='no' /&gt;
+            &lt;customization name='CAP_QUERY_JOIN_REQUIRES_SCOPE' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_NULL_REQUIRES_CAST' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_SELECT_ALIASES_SORTED' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_SORT_BY_DEGREE' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_SUBQUERIES' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_SUBQUERIES_WITH_TOP' value='no' /&gt;
+            &lt;customization name='CAP_QUERY_SUBQUERY_QUERY_CONTEXT' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_TOPSTYLE_LIMIT' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_TOPSTYLE_ROWNUM' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_TOPSTYLE_TOP' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_TOP_0_METADATA' value='no' /&gt;
+              &lt;customization name='CAP_QUERY_TOP_N' value='yes' /&gt;
+              &lt;customization name='CAP_QUERY_WHERE_FALSE_METADATA' value='no' /&gt;
+              &lt;customization name='CAP_SELECT_INTO' value='no' /&gt;
+              &lt;customization name='CAP_SELECT_TOP_INTO' value='yes' /&gt;
+              &lt;customization name='CAP_SET_ISOLATION_LEVEL_VIA_ODBC_API' value='no' /&gt;
+              &lt;customization name='CAP_SET_ISOLATION_LEVEL_VIA_SQL' value='no' /&gt;
+              &lt;customization name='CAP_SUPPRESS_CONNECTION_POOLING' value='no' /&gt;
+              &lt;customization name='CAP_SUPPRESS_DISCOVERY_QUERIES' value='no' /&gt;
+              &lt;customization name='SQL_AGGREGATE_FUNCTIONS' value='31' /&gt;
+              &lt;customization name='SQL_CATALOG_NAME_SEPARATOR' value='' /&gt;
+              &lt;customization name='SQL_CATALOG_USAGE' value='7' /&gt;
+              &lt;customization name='SQL_COLUMN_ALIAS' value='Y' /&gt;
+              &lt;customization name='SQL_CONVERT_BIGINT' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_BINARY' value='261631' /&gt;
+              &lt;customization name='SQL_CONVERT_BIT' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_CHAR' value='261631' /&gt;
+              &lt;customization name='SQL_CONVERT_DATE' value='167169' /&gt;
+              &lt;customization name='SQL_CONVERT_DECIMAL' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_DOUBLE' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_FLOAT' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_FUNCTIONS' value='1' /&gt;
+              &lt;customization name='SQL_CONVERT_GUID' value='0' /&gt;
+              &lt;customization name='SQL_CONVERT_INTEGER' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_INTERVAL_DAY_TIME' value='0' /&gt;
+              &lt;customization name='SQL_CONVERT_LONGVARBINARY' value='0' /&gt;
+              &lt;customization name='SQL_CONVERT_NUMERIC' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_REAL' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_SMALLINT' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_TIME' value='199937' /&gt;
+              &lt;customization name='SQL_CONVERT_TIMESTAMP' value='232705' /&gt;
+              &lt;customization name='SQL_CONVERT_TINYINT' value='32255' /&gt;
+              &lt;customization name='SQL_CONVERT_VARBINARY' value='261631' /&gt;
+              &lt;customization name='SQL_CONVERT_VARCHAR' value='261631' /&gt;
+              &lt;customization name='SQL_CURSOR_COMMIT_BEHAVIOR' value='1' /&gt;
+              &lt;customization name='SQL_DATETIME_LITERALS' value='0' /&gt;
+              &lt;customization name='SQL_DBMS_NAME' value='QuNect for QuickBase' /&gt;
+              &lt;customization name='SQL_DRIVER_ODBC_VER' value='03.52' /&gt;
+              &lt;customization name='SQL_IDENTIFIER_QUOTE_CHAR' value='&quot;' /&gt;
+              &lt;customization name='SQL_MAX_IDENTIFIER_LEN' value='255' /&gt;
+              &lt;customization name='SQL_NUMERIC_FUNCTIONS' value='16777215' /&gt;
+              &lt;customization name='SQL_ODBC_INTERFACE_CONFORMANCE' value='1' /&gt;
+            &lt;customization name='SQL_ODBC_VER' value='03.52.0000' /&gt;
+              &lt;customization name='SQL_OJ_CAPABILITIES' value='121' /&gt;
+              &lt;customization name='SQL_QUOTED_IDENTIFIER_CASE' value='4' /&gt;
+              &lt;customization name='SQL_SCHEMA_USAGE' value='31' /&gt;
+              &lt;customization name='SQL_SPECIAL_CHARACTERS' value='' /&gt;
+              &lt;customization name='SQL_SQL92_DATETIME_FUNCTIONS' value='0' /&gt;
+              &lt;customization name='SQL_SQL92_NUMERIC_VALUE_FUNCTIONS' value='0' /&gt;
+              &lt;customization name='SQL_SQL92_PREDICATES' value='16135' /&gt;
+              &lt;customization name='SQL_SQL92_RELATIONAL_JOIN_OPERATORS' value='0' /&gt;
+              &lt;customization name='SQL_SQL92_STRING_FUNCTIONS' value='0' /&gt;
+              &lt;customization name='SQL_SQL92_VALUE_EXPRESSIONS' value='0' /&gt;
+              &lt;customization name='SQL_SQL_CONFORMANCE' value='1' /&gt;
+              &lt;customization name='SQL_STRING_FUNCTIONS' value='16777215' /&gt;
+              &lt;customization name='SQL_SYSTEM_FUNCTIONS' value='7' /&gt;
+              &lt;customization name='SQL_TIMEDATE_ADD_INTERVALS' value='510' /&gt;
+              &lt;customization name='SQL_TIMEDATE_DIFF_INTERVALS' value='510' /&gt;
+              &lt;customization name='SQL_TIMEDATE_FUNCTIONS' value='2097151' /&gt;
+              &lt;customization name='SQL_TXN_CAPABLE' value='1' /&gt;
+          &lt;/customizations&gt;
+        &lt;/connection-customization&gt;
+		</pre>
+        </p>
+    </body>
+</html>
+
+               

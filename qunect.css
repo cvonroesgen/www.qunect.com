@@ -1,0 +1,57 @@
+div.banner{
+		background: linear-gradient(90deg, white, white,55%, #74489d, #74489d,  #74489d);
+		padding:5px;
+		width:830px;
+		height:55px}
+div.menu{
+		background: linear-gradient(90deg, #21409a, 50%,  #02b6fe);
+		padding-left:20px;
+		padding-top:3px; padding-bottom:3px;
+		width:820px; 
+		color:#FFFFFF; 
+		font-style: italic; 
+		font-weight:500; 
+		font-size: 90%;
+		}
+div.bar{background-color: #fade4b;height:4px;width:840px;}
+div.download{padding-left:20px}
+span.tagline{position:relative; top: 15px; padding-left: 20px; font-size: 85%; font-style: italic; font-weight: 900; color:#21409a;}
+span.vertpipe{display: inline-block;font-style:normal; font-weight:500; font-size: 85%; margin-right:5px; margin-left:5px}
+span.productName{font-weight:bold;}
+p.headline{font-size: 100%;font-weight: bold;font-style: italic;}
+p.tagline{font-size: 80%;font-weight: bold;font-style: italic;}
+p.subhead{font-size: 90%;font-weight: bold;}
+p.subhead img{vertical-align:middle;}
+p.normal{font-size: 80%;width:600px}
+p.question{font-size: 80%;width:600px}
+p.answer{font-size: 70%;margin-left:40px;width:600px}
+div.normal{font-size: 80%;width:600px}
+p.code{font-size: 80%;}
+pre{padding-left:40px}
+body {background-color: #FFFFFF; font-family: Source Sans Pro, sans-serif; margin:0px;}
+ol, ul{font-size:.9rem; width:600px}
+p {margin-left: 20px}
+a.button{text-decoration: none}
+a.menu:link { color: #FFFFFF; text-decoration: none}     /* unvisited link */
+a.menu:visited { color: #FFFFFF; text-decoration: none}  /* visited link */
+a.menu:hover { color: #00a6e9; text-decoration: none}   /* mouse over link */
+#qspimg {height: auto; width: auto; max-height: 35px; float:right; position:relative; top: 10px; left:-17px}
+#logo {height: auto; width: auto; max-height: 55px; float:left; position:relative; left: 10px;}
+#products table tr td {font-size: 90%;}
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+   div.banner{
+		background:#74489d;
+		padding:5px;
+		width:830px;
+		height:55px}
+div.menu{
+		background: #02b6fe;
+		padding-left:20px;
+		padding-top:3px; padding-bottom:3px;
+		width:820px; 
+		color:#FFFFFF; 
+		font-style: italic; 
+		font-weight:500; 
+		font-size: 90%;
+		} 
+}

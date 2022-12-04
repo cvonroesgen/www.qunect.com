@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Creating a Linked Server for Quickbase in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Creating a Linked Server for Quickbase in SQL Server</p>
+        <p class=normal>To create a linked server make sure your <a href="gettingStarted.html">DSNs are configured</a>. Then run the following SQL:</p>
+<p class=code>
+<pre>
+EXEC sp_addlinkedserver
+@server = N'QUICKBASE',
+@srvproduct=N'QuNect',
+@provider=N'MSDASQL',
+@datasrc=N'QuickBase via QuNect'
+GO
+</pre>
+</p>
+<p class=normal>If while executing queries with four part names, you get an error message like this:</p>
+<p class=code>
+<pre>
+Invalid use of schema or catalog for OLE DB provider "MSDASQL" for linked server "QUICKBASE".
+A four-part name was supplied, but the provider does not expose the necessary interfaces to use a catalog or schema..
+</pre>
+</p>
+<p class=normal>You'll need to uncheck the <strong>Level zero only</strong> property.
+to accomplish this go to:
+<strong>SQL Management Studio -> Server Objects -> Linked Servers -> Providers</strong>
+right click on <strong>MSDASQL</strong> and select <strong>Properties</strong> and uncheck the <strong>Level zero only</strong> property.
+click on “OK” and restart the SQL Server service.<br/>
+<img src="i/levelZeroOnly.png" />
+</p>
+<p class=normal>In a few rare cases on SQL Server 2000 it seems that creating a linked server using the stored procedure <strong>sp_addlinkedserver</strong>
+does not work properly even though
+there is no indication of an error. The resulting linked server just doesn't work.
+The workaround in this situation is to use the <a href="uiLinkedServer.html">UI method of creating a linked server</a>.</p>
+
+
+</body>
+</html>
+
+               

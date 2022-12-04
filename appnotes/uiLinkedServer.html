@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Creating a Linked Server via the UI for Quickbase in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Creating a Linked Server via the UI for Quickbase in SQL Server</p>
+        <p class=normal>
+            To create a linked server for Quickbase just open up SQL Server Management Studio
+            and double click on the <strong>Server Objects</strong> folder.
+            Then right click on the <strong>Linked Servers</strong> folders and choose
+            <strong>New Linked Server...</strong>. Then fill out the dialog as indicated in
+            the figure below. When you install QuNect ODBC for QuickBase it created DSNs (Data Source Names) for
+            you that are called <strong>QuickBase via QuNect 64 bit</strong> and <strong>QuickBase via QuNect 32 bit</strong>.
+			If you're running a 64 bit version of SQL Server then use the 64 bit DSN otherwise use the 32 bit DSN.
+			These data sources are not
+            configured with a username and password until you enter them manually. Please watch  the <a href="/flash/configure.html">getting
+            started application note</a> to learn how to configure your DSNs with a username and password. If you don't have
+            a username and password for the QuickBase via QuNect system DSN then your linked server will not work properly.<br/>
+			<img src="i/NewLinkedServer.gif">
+</p>
+<p class=normal>Also on the <strong>Security</strong> properties make sure to stick with the default of "Be made without using a security context". <br/>
+<img src="i/LinkedServerSecurity.png" /></p>
+<p class=normal>If while executing queries with four part names, you get an error message like this:</p>
+<p class=code>
+<pre>
+Invalid use of schema or catalog for OLE DB provider "MSDASQL" for linked server "QUICKBASE".
+A four-part name was supplied, but the provider does not expose the necessary interfaces to use a catalog or schema.
+</pre>
+</p>
+<p class=normal>You'll need to uncheck the <strong>Level zero only</strong> property.
+to accomplish this go to:
+<strong>SQL Management Studio -> Server Objects -> Linked Servers -> Providers</strong>
+right click on <strong>MSDASQL</strong> and select <strong>Properties</strong> and uncheck the <strong>Level zero only</strong> property.
+Also make sure to check the <strong>Non transacted updates</strong> option to avoid the error below.
+Click on “OK” and restart the SQL Server service.<br/>
+<img src="i/levelZeroOnly.png" />
+</p>
+<p class=normal>If while executing a SQL statement in a trigger you get an error message like this:</p>
+<p class=code>
+<pre>
+The operation could not be performed because OLE DB provider "MSDASQL" for linked server "QUICKBASE" was unable to begin a distributed transaction.
+</pre>
+</p>
+<p class=normal>You'll need to turn off the <strong>Enable Promotion of Distributed Transactions</strong> property.
+to accomplish this go to:
+<strong>SQL Management Studio -> Server Objects -> Linked Servers</strong> 
+right click on on your linked server and select <strong>Properties</strong>. Then in the upper left corner of the <strong>Properties</strong> dialog select the <strong>Server Options</strong> page and set the <strong>Enable Promotion of Distributed Transactions</strong> property to false.
+Then click on “OK” and restart the SQL Server service.<br/>
+<img src="i/distributedTransactions.png" />
+</p>
+
+</body>
+</html>
+
+               

@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <title>Using a TDC file with Tableau</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+<body>
+	<div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+	<p class=subhead>Tableau Desktop</p>
+	<ul>
+		<li>Name the file <a href="QuNect.tdc">QuNect.tdc</a> and save it to Documents\My Tableau Repository\Datasources.</li>
+		<li>Note: The file must be saved using a .tdc extension, but the name does not matter.</li>
+		<li>Restart Tableau Desktop to apply the change.</li>
+		<li>Create a new connection to QuickBase using QuNect ODBC for QuickBase.</li>
+		<li>Go to and open the Tableau Desktop log file, and look for a record similar to the example below to verify that this customization file was applied to your new connection.</li>
+	</ul>
+	<p class=normal>Log File Location:</p>
+	<p class=normal>By default, C:\Users\&lt;user&gt;\Documents\My Tableau Repository\Logs</p>
+
+	<p class=normal>Example of Record:</p>
+	<p class=normal>Found matching TDC 'C:\\Users\\&lt;user&gt;\\Documents\\My Tableau Repository\\Datasources\\QuNect.tdc' for class='genericodbc', vendor='QuNect for Quickbase', and driver='QuNect ODBC for QuickBase'</p>
+
+<p class=subhead>Tableau Server</p>
+			<p class=normal>Name the file <a href="QuNect.tdc">QuNect.tdc</a> and save it to the following location:</p>
+
+			<p class=normal>For Windows:</p>
+			<p class=normal>Program Files\Tableau\Tableau Server\&lt;version&gt;\bin</p>
+
+			<p class=normal>Or</p>
+
+	<p class=normal>ProgramData\Tableau\Tableau Server\data\tabsvc\vizqlserver\Datasources</p>
+
+	<p class=normal>To save the file, you must be a Windows Administrator on the server computer.</p>
+
+	<p class=normal>For Linux:</p>
+	<p class=normal>/var/opt/tableau/tableau_server/data/tabsvc/vizqlserver/Datasources/</p>
+
+	<p class=normal>Note: The file must be saved using a .tdc extension, but the name does not matter.</p>
+
+	<p class=normal>Restart Tableau Server to apply the change.</p>
+
+	<p class=normal>In Tableau Desktop, create a new connection to QuickBase as described in Create a connection.</p>
+
+	<p class=normal>Go to and open the Tableau Server log file, and look for a record similar to the example below to verify that this customization file was applied to your new connection.</p>
+	<p class=normal>Log File Location</p>
+	<p class=normal>C:\ProgramData\Tableau\Tableau Server\data\tabsvc\vizqlserver\Logs</p>
+	<p class=normal>Example of Record</p>
+	<p class=normal>Found matching TDC 'C:\\ProgramData\\Tableau\\Tableau Server\\data\\tabsvc\\vizqlserver\\Datasources\\QuNect.tdc for class='genericodbc',  vendor='QuNect for Quickbase', and driver='QuNect ODBC for QuickBase'</p>
+
+
+</body>
+</html>

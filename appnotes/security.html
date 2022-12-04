@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>QuNect Security</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>How Secure is QuNect ODBC for QuickBase?</p>
+        <p class=normal>QuNect ODBC for QuickBase is actually more secure than Quickbase itself.
+        This results from the fact that all communications between QuNect ODBC for QuickBase and Quickbase are done 
+        with SSL TLS over HTTPS (port 443). There is no option to use HTTP to communicate with Quickbase when
+        using QuNect ODBC for QuickBase. All information communicated between QuNect ODBC for QuickBase and Quickbase 
+        itself is encrypted with the industry-standard,
+        Secure Socket Layers (SSL) protocol to ensure your information is neither intercepted 
+        nor corrupted during transmission over the Internet.This includes but is not limited usernames, passwords, database information and 
+        database metainformation such as application, table and columns names.
+        The level and type of encryption within the SSL protocol is determined by the configuration of your operating system.
+		</p>
+		<p class=normal>
+		A QuNect ODBC for QuickBase license holder must use either their Quickbase password or a usertoken along with their Quickbase user name to configure their DSN or connection string.
+		DSNs are managed by the ODBC Administrator application (C:\Windows\System32\odbcad.exe) that is part of the Windows operating system or in the case of Linux and MacOS a separate application (e.g. iODBC, unixODBC).
+		The Windows ODBC Administrator application stores configuration information in the Registry including passwords and usertokens.
+		For Linux and MacOS the ODBC Administrator applications store information in a file called odbc.ini.
+		Connection strings can be used instead of DSNs. It is up to an ODBC client application (e.g. Tableau, SQL Server, MS Excel, MS Access, Informatica, MATLAB, etc) to store the connection string.
+		QuNect ODBC for QuickBase does not store connection strings, usernames, passwords or usertokens except temporarily in memory while QuNect ODBC for QuickBase is being used by the ODBC client application.
+		</p>
+    </body>
+</html>
+
+               

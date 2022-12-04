@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Application Notes for QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Documentation for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>First Steps</p>        
+            <ul>
+                <li><a href="/appnotes/gettingStarted.html">Getting Started</a></li>
+				<li><a href="/flash/Dialog.html">A detailed tour of the DSN dialog <img border=0 src="/i/youtube.png"> </a></li>
+				<li><a href="/flash/AppToken.html">Application Tokens</a></li>
+				<li><a href="/flash/UserToken.html">User Tokens instead of passwords for Single Sign On (SSO) organizations</a></li>
+                <li><a href="/appnotes/appid.html">How to find the APPID of a Quickbase application.</a></li>
+                <li><a href="/appnotes/writingSQL.html">Writing SQL Statements for QuNect ODBC for QuickBase</a></li>
+            </ul>
+		<p class=subhead>Tables</p>        
+            <ul>
+				<li><a href="/flash/systemTables.html">Accessing Quickbase table reports</a></li>
+				<li><a href="/appnotes/createTable.html">Using a CREATE TABLE and ALTER TABLE statement</a></li>
+                <li><a href="/appnotes/dbid.html">How to find the DBID of a Quickbase table.</a></li>
+                <li><a href="/appnotes/archiveToQuickBase.html">Archiving Records from one Quickbase Application to a copy of the Application</a></li>
+                <li><a href="/appnotes/tableAliases.html">How to Use Table Aliases</a></li>
+                <li><a href="/flash/backup.html">Getting Started with QuNect Backup</a></li>
+            </ul>
+		<p class=subhead>Fields</p>        
+            <ul>
+                <li><a href="/appnotes/fields.html">How QuNect ODBC for QuickBase changes Quickbase Field Names to Make them Compatible with Other Databases</a></li>
+                <li><a href="/appnotes/userFields.html">Quickbase User Field Behaviour</a></li>
+                <li><a href="/appnotes/keywords.html">Quickbase Field Names to Avoid</a></li>
+                <li><a href="/appnotes/fid.html">How to find the FID of a Quickbase field.</a></li>
+                <li><a href="/appnotes/manualTextSize.html">How to Manually set the Size of a Quickbase Field</a></li>
+				<li>
+					<p class=subhead>File Attachments</p>
+					<ul>
+						<li><a href="/appnotes/bulkUploadFileAttachments.html">Bulk Uploading of Files to File Attachment Fields</a></li>
+						<li><a href="/appnotes/copyingFilesTableToTable.html">Copying File Attachments from one Quickbase Table to another Quickbase Table</a></li>
+						<li><a href="/appnotes/DeletingFileAttachments.html">Deleting File attachments from Quickbase</a></li>
+						<li><a href="/appnotes/fileAttachments.html">Downloading File Attachments from Quickbase into SQL Server</a></li>
+					</ul>
+				</li>
+            </ul>
+        <p class=subhead>Security</p>        
+            <ul>
+                <li><a href="/appnotes/security.html">Security</a></li>
+				<li><a href="/appnotes/tls.html">12175 WinHTTPSendRequest A security error occurred</a></li>				
+            </ul>
+        <p class=subhead>SQL Server</p>        
+            <ul>
+                <li><a href="/appnotes/uiLinkedServer.html">Creating a Linked Server for Quickbase in SQL Server Using the UI</a></li>
+				<li><a href="/flash/linkedServer.html">Watch how to create a Linked Server for Quickbase in SQL Server Using the UI <img border=0 src="/i/youtube.png"></a></li>
+                <li><a href="/appnotes/linkedServer.html">Creating a Linked Server for Quickbase in SQL Server Using SQL</a></li>
+				<li><a href="/flash/sql.html">Writing SQL Statements in SSMS for SQL Server</a></li>
+				<li><a href="/appnotes/performance.html">Minimizing Integration Reads</a></li>
+				<li><a href="/appnotes/dbschema_tables.html">Cannot obtain the schema rowset "DBSCHEMA_TABLES" for OLE DB provider MSDASQL</a></li>
+				<li><p class=subhead>from Quickbase</p>
+					<ul>
+						<li><a href="/flash/systemTables.html">Quickbase Table reports as Views and System Tables in SQL Server</a></li>
+						<li><a href="/appnotes/listCatalogsSQLServer.html">Listing all your Quickbase Applications in SQL Server</a></li>
+						<li><a href="/appnotes/listTablesSQLServer.html">Listing all your Quickbase Tables in SQL Server</a></li>
+						<li><a href="/appnotes/fourPartName.html">Writing a Simple Select Statement for Quickbase in SQL Server</a></li>
+						<li><a href="/appnotes/syncAllQuickBaseTablesInSQLServer.html">Synching All Quickbase Tables in SQL Server</a></li>
+						<li><a href="/appnotes/mirrorAllQuickBaseInSQLServer.html">Mirroring All Quickbase Tables in SQL Server</a></li>
+						<li><a href="/appnotes/SQLSync.html">Synching a Quickbase Table in SQL Server</a></li>
+						<li><a href="/appnotes/fileAttachments.html">Downloading File Attachments from Quickbase into SQL Server</a></li>
+						<li><a href="/appnotes/mirrorQuickBaseInSQLServer.html">Mirroring a Single Quickbase Table in SQL Server</a></li>
+						<li><a href="/appnotes/fieldsForAllQuickBaseInSQLServer.html">Create a table with all the fields in your Quickbase tables</a></li>
+					</ul>				
+				</li>
+				<li><p class=subhead>to Quickbase</p>
+					<ul>						
+						<li><a href="/appnotes/SQLServerToQuickBase.html">Mirroring a Quickbase Table to a SQL Server Table with one SQL Statement</a></li>
+						<li><a href="/appnotes/mirrorSQLServerTableInQuickBase.html">Mirroring the Schema of a Single SQL Server Table in Quickbase</a></li>
+						<li><a href="/appnotes/QuickBaseSQLSync.html">Synching a SQL Server table in Quickbase</a></li>
+						<li><a href="/appnotes/insertFromSQLtoQuickBase.html">Copying Records from SQL Server to Quickbase</a></li>
+						<li><a href="/appnotes/openQuery.html">Optimizing SQL Server OPENQUERY with INSERT, UPDATE and DELETE</a></li>
+						<li><a href="/appnotes/triggerForSQLServerTableToQuickBase.html">Synchronize a SQL Server table in Quickbase with a trigger</a></li>
+						<li><a href="/appnotes/triggerForSQLServerDeleteToQuickBase.html">Delete Quickbase records when SQL Server deletes occur with a trigger</a></li>
+				</ul>
+            </ul>
+		<p class=subhead>SSIS</p>        
+            <ul>
+				<li><a href="/flash/SSISSchedule.html">Build an SSIS Package and run it with Windows Task Scheduler</a></li>
+				<li><a href="/flash/SSISSQLAgent.html">Using SQL Agent to Run an SSIS Package</a></li>
+				<li><a href="/flash/SSISConnectionNoDSN.html">Creating an SSIS Connection Independent of Machine Architecture</a></li>
+				<li><a href="/appnotes/SSISDataSourceDesigner.html">Creating a Data Source for Quickbase in SQL Server Integration Services (SSIS)</a></li>
+				<li><a href="/appnotes/SSISErrors.html">Sending Errors to a Text File in SQL Server Integration Services (SSIS)</a></li>
+				<li><a href="/flash/SSISVS2017.html">Creating a Data Source for Quickbase in SQL Server Integration Services (SSIS) and Visual Studio 2017</a></li>
+				<li><a href="/flash/SSISSendMailTask.html">Using the Send Mail Task to Report Errors in SSIS</a></li>
+				<li><a href="/flash/SSISSendMailScriptTask.html">Using the Script Task to Report Errors in SSIS</a></li>
+            </ul>
+        <p class=subhead>Tableau</p>        
+            <ul>
+				<li><a href="/flash/tableau.html">Connecting Tableau to Quickbase via QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/tableau.html">A QuNect TDC file for Tableau</a></li>
+				<li><a href="/appnotes/QuNectTDC.html">Using a TDC file with Tableau</a></li>
+				<li><a href="/flash/TableauCustomSQL.html">Tableau Custom SQL with QuNect ODBC for QuickBase</a></li>
+            </ul>
+		<p class=subhead>Azure</p>        
+            <ul>
+                <li><a href="/flash/AzureDataFactory.html">Connect to QuickBase from an Azure Data Factory</a></li>
+            </ul>
+		<p class=subhead>PowerBI</p>        
+            <ul>
+                <li><a href="/appnotes/PowerBI.html">Working with PowerBI</a></li>
+				<li><a href="/appnotes/PowerBITop.html">PowerBI, faster previews</a></li>
+            </ul>
+        <p class=subhead>MS Excel</p>        
+            <ul>
+                <li><a href="/flash/ExcelPivot.html">Create an Excel Pivot Table Dynamically Linked to QuickBase</a></li>
+				<li><a href="/flash/ExcelOffice365Pivot.html">Create an Excel Office 365 Pivot Table Dynamically Linked to QuickBase</a></li>
+				<li><a href="/appnotes/Excel365NoDSN.html">Excel 365 without DSN or Password</a></li>
+				<li><a href="/flash/ExcelBestPractices.html">Quickbase to Excel Best Practices</a></li>
+            </ul>
+		<p class=subhead>MS Access</p>        
+            <ul>
+				<li><a href="/flash/MSAccessOffice365.html">Dynamically Linking Quickbase tables in MS Access Office 365</a></li>
+				<li><a href="/flash/MSAccess2007.html">Dynamically Linking Quickbase tables in MS Access 2007</a></li>
+                <li><a href="/appnotes/exportODBCMSAccess.html">Exporting a table via QuNect ODBC for QuickBase from MS Access</a></li>
+				<li><a href="/appnotes/passThroughMSAccess.html">Using Pass-Through Queries with QuNect ODBC for QuickBase from MS Access (text version)</a></li>
+				<li><a href="/flash/passthrough.html">Using Pass-Through Queries with QuNect ODBC for QuickBase from MS Access (video version)</a></li>
+            </ul>
+        <p class=subhead>Jitterbit</p>        
+            <ul>
+                <li><a href="/appnotes/jitterbit.html">Jitterbit and QuNect ODBC for QuickBase</a></li>
+            </ul>
+        <p class=subhead>VB.Net, VB6 and VBScript</p>        
+            <ul>
+                <li><a href="/appnotes/vbScriptBackupToCSV.html">Backing up a table to a CSV file</a></li>
+                <li><a href="/appnotes/connectionString.html">Creating a connection string</a></li>
+                <li><a href="/appnotes/VBScript.html">Opening up a table and reading the first column</a></li>
+                <li><a href="/appnotes/writingSQLforVBSinsert.html">Inserting and Adding Records to a Quickbase Table from VBScript</a></li>
+                <li><a href="/appnotes/VBNetSQLQuNectQuickBase.html">VB.Net Console Application for Copying Rows from a SQL Server Table to a Quickbase Table</a></li>
+				<li><a href="/appnotes/VBNetBatchFileUpload.html">VB.Net Console Application for Uploading files from a Directory to a Quickbase Table</a></li>
+            </ul>
+        <p class=subhead>Supported SQL Syntax</p>        
+            <ul>
+                <li><a href="/appnotes/sqlSyntax.html">SQL Syntax Supported by QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/createTable.html">Using a CREATE TABLE and ALTER statement</a></li>
+                <li><a href="/appnotes/stringFunctions.html">Scalar String Functions Supported by QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/numericFunctions.html">Scalar Numeric Functions Supported by QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/timeFunctions.html">Scalar Date and Time Functions Supported by QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/convertFunction.html">Scalar Type Conversion Function Supported by QuNect ODBC for QuickBase</a></li>
+                <li><a href="/appnotes/identity.html">Adding a Master Record and a Linked Detail Record</a></li>
+            </ul>
+        <p class=subhead>Licensing</p>        
+            <ul>
+                <li><a href="/appnotes/license.html">License for QuNect ODBC for QuickBase</a></li>
+            </ul>
+        <p class=subhead>Logging</p>        
+            <ul>
+                <li><a href="/flash/logging.html">Logging SQL statements and API calls with QuNect ODBC for QuickBase</a></li>
+				<li><a href="/flash/Tracing.html">How to turn on ODBC Tracing in Microsoft Windows</a></li>
+				<li><a href="/appnotes/pooling.html">Minimizing API calls with QuNect ODBC for QuickBase</a></li>
+            </ul>
+		<p class=subhead>DB Pages</p>        
+            <ul>
+                <li><a href="/appnotes/dbPages.html">Reading and Writing DB Pages</a></li>
+            </ul>
+    </body>
+</html>
+
+               

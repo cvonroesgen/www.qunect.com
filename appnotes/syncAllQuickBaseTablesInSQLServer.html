@@ -1,0 +1,622 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>Synching all Quickbase tables in SQL Server</title>
+		<link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+		<div class=menu>
+			<a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+			<a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+			<a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+			<a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+			<a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+			<a class=menu href="https://qunect.com/buy/">Purchase</a>
+		</div>
+		<div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+		<p class=subhead>Synching all Quickbase tables in SQL Server</p>
+		<p class=normal>The following stored procedure will synch all tables the linked server has access to from Quickbase to SQL Server 2008 and beyond.
+		For earlier versions of SQL Server please search and replace DATETIME2 with DATETIME and datetime2 with datetime.
+		After running this stored procedure the tables in SQL Server will be up to date with the tables in Quickbase.
+		This stored procedure takes two optional parameters. <strong>@keepAllVersionsOfModifiedRecords</strong> is set to false by default.
+		If you set it to
+		true then you are keeping a history of the state of all your records at each point that this stored procedure was run.
+		The optional parameter <strong>@keepAllDeletedRecords</strong> is also set to false by default.
+		If you set it to true then deleted records are not
+		removed from the SQL Server version of the Quickbase table. This is useful if you want the capability to restore deleted
+		records to Quickbase. However if your objective is to have an exact SQL Server image of your Quickbase data then you'll
+		want to leave these parameters at their default value of false.
+		This stored procedure will handle schema changes in Quickbase by adding new columns into the existing SQL Server
+		table. If columns are renamed, deleted or changed to a different type in Quickbase then this stored procedure will make
+		a copy of the corresponding existing SQL Server
+		table with a timestamp in the name and start from scratch with a new SQL Server table.
+		
+		This stored procedure only modifies SQL Server tables, not the corresponding Quickbase tables and it requires version x.18.07.56 or higher of QuNect ODBC for QuickBase.
+		If you want to go in the other direction please read <a href="QuickBaseSQLSync.html">Synching a SQL Server table in Quickbase</a>.
+		
+<p class=code>
+<pre>
+CREATE PROCEDURE [dbo].[SyncQuickBaseTablesToSQLServer]
+/****** Requires version x.18.07.56 or higher of QuNect ODBC for QuickBase ***************************************/
+/****** Object:  StoredProcedure [dbo].[SyncQuickBaseTablesToSQLServer]    Script Date: 2/14/2018 7:04:39 PM ******/
+@keepAllVersionsOfModifiedRecords bit = 0,
+@keepAllDeletedRecords bit = 0,
+@ignoreVirtualFields bit = 1
+AS
+BEGIN TRY
+	SET NOCOUNT ON;
+	if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_tables_to_sync]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	BEGIN
+		PRINT 'This procedure is terminating without performing any backups because'
+		PRINT 'an instance of this stored procedure is already running.'
+		PRINT 'This is based on detecting the presence of the table called'
+		PRINT '"qunect_tables_to_sync". If this table exists and another instance of this stored'
+		PRINT 'procedure is not running then manually delete the table called "qunect_tables_to_sync"'
+		PRINT 'and rerun this stored procedure. The last thing this stored procedure does is'
+		PRINT 'drop the table called "qunect_tables_to_sync". Do "qunect_tables_to_sync" should not exist if this'
+		PRINT 'stored procedure is not running.'
+	END
+
+	CREATE TABLE [dbo].[qunect_tables_to_sync] (
+		[TABLE_QUALIFIER] [nvarchar] (128) NULL ,
+		[TABLE_OWNER] [nvarchar] (128) NULL ,
+		[TABLE_NAME] [nvarchar] (128) NULL ,
+		[TABLE_TYPE] [nvarchar] (128) NULL ,
+		[REMARKS] [varchar] (254) NULL
+	) ON [PRIMARY]
+
+	INSERT qunect_tables_to_sync EXEC sp_tables_ex quickbase
+	DECLARE @dbid nvarchar(128)
+	DECLARE @numQuickBaseTables int
+	DECLARE @numQuickBaseTablesBackedUp int
+	DECLARE @dateModifiedFieldName nvarchar(128)
+	DECLARE @recordIDFieldName nvarchar(128)
+	DECLARE @tempsql nvarchar(max)
+	SELECT @numQuickBaseTables = count(*) FROM qunect_tables_to_sync WHERE [TABLE_TYPE] = 'TABLE'
+	SET @numQuickBaseTablesBackedUp = 0
+	BEGIN TRY
+		DEALLOCATE table_cursor
+	END TRY
+	BEGIN CATCH
+		PRINT 'table_cursor did not exist.'
+	END CATCH
+	DECLARE table_cursor CURSOR FOR SELECT TABLE_NAME FROM qunect_tables_to_sync WHERE [TABLE_TYPE] = 'TABLE'
+	OPEN table_cursor
+	FETCH NEXT FROM table_cursor INTO @dbid
+	WHILE (@@FETCH_STATUS <> -1)
+	BEGIN		
+		IF (@@FETCH_STATUS <> -2)
+		BEGIN
+			PRINT ''
+			PRINT '####################'
+			PRINT 'Backing up ' + @dbid
+			BEGIN
+				IF exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_field_columns]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+				BEGIN
+					drop table [dbo].qunect_field_columns
+				END
+				SET @tempsql = 'SELECT * INTO qunect_field_columns FROM  OPENQUERY(QUICKBASE, ''select * FROM "'+@dbid+'~fields"'
+				IF @ignoreVirtualFields = 1
+				BEGIN						
+					SET @tempsql = @tempsql +  ' WHERE mode = '''''''' OR mode IS NULL OR field_type = ''''recordid'''' '')'
+				END
+				ELSE
+				BEGIN
+					SET @tempsql = @tempsql +  ' WHERE (mode = '''''''' OR mode IS NULL OR field_type = ''''recordid'''') OR (mode = ''''virtual'''' AND field_type NOT IN (''''dblink'''',''''url'''') ) '')'  
+				END
+				PRINT @tempsql
+				EXEC(@tempsql)
+				DECLARE temp_column_cursor CURSOR FOR SELECT qunect_field_columns.COLUMN_NAME
+						FROM qunect_field_columns
+				DECLARE @columnName nvarchar(128)
+				DECLARE @columnList nvarchar(max)
+				DECLARE @comma nvarchar(1)
+				SET @columnList = ''
+				SET @comma = ''
+				OPEN temp_column_cursor
+					FETCH NEXT FROM temp_column_cursor INTO @columnName
+					WHILE (@@FETCH_STATUS <> -1)
+					BEGIN		
+						IF (@@FETCH_STATUS <> -2)
+						BEGIN
+							SET @columnList =  @columnList + @comma + '"' +  REPLACE(@columnName, '''', '''''') + '"' 
+							SET @comma = ','
+						END
+						FETCH NEXT FROM temp_column_cursor INTO @columnName
+					END
+				DEALLOCATE temp_column_cursor
+				DECLARE @doesTempExist int
+				DECLARE @doesExist int
+				DECLARE @onlyNewAndModified int
+				SELECT @doesExist = count(*) FROM sysobjects Where Name = @dbid AND xType= 'U'
+				IF @doesExist = 0
+				BEGIN TRY
+					
+					SET @tempsql = 'SELECT * INTO "'+@dbid+'" FROM  OPENQUERY(QUICKBASE, ''select ' + @columnList + ' FROM "'+@dbid+'"'')'
+					PRINT @tempsql
+					EXEC(@tempsql)
+					SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1
+					FETCH NEXT FROM table_cursor INTO @dbid
+					CONTINUE
+				END TRY					
+				BEGIN CATCH
+					PRINT 'Non-Incremental approach failed, no records retrieved from ' + @dbid
+					PRINT ERROR_MESSAGE()
+					FETCH NEXT FROM table_cursor INTO @dbid
+					CONTINUE
+				END CATCH
+				SELECT @doesTempExist = count(*) FROM sysobjects Where Name = 'qunect_temp' AND xType= 'U'
+				IF @doesTempExist > 0 
+				BEGIN TRY
+					PRINT 'Dropping qunect_temp' 
+					--need to clean up in case things didn't get cleaned up from the last run
+					EXEC('DROP TABLE qunect_temp')
+				END TRY
+				BEGIN CATCH
+					PRINT 'Could not drop qunect_temp'
+					PRINT ERROR_MESSAGE()
+				END CATCH		
+				BEGIN TRY				
+					--Here we need to get the largest timestamp from the local table
+					--and use it to get the records we need from Quickbase into a temp table
+					PRINT 'Attempting to get incremental records from:"'+@dbid+'"'
+					IF exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_field_columns]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+					BEGIN
+						drop table [dbo].qunect_field_columns
+					END
+					SET @tempsql = 'SELECT * INTO qunect_field_columns FROM  OPENQUERY(QUICKBASE, ''select * FROM "'+@dbid+'~fields"'')'
+					PRINT @tempsql
+					EXEC(@tempsql)
+					DECLARE @escapeddbid nvarchar(256)
+					SET @escapeddbid = REPLACE(@dbid, '_', '[_]')
+					SELECT TOP 1 @dateModifiedFieldName = "COLUMN_NAME" FROM qunect_field_columns WHERE fid = 2
+					SELECT TOP 1 @recordIDFieldName = "COLUMN_NAME" FROM qunect_field_columns WHERE fid = 3
+					BEGIN TRY
+						PRINT 'Dropping qunect_modified' 
+						--need to clean up in case things didn't get cleaned up from the last run
+						EXEC('DROP TABLE "qunect_modified"')
+					END	TRY						
+					BEGIN CATCH
+						PRINT 'No qunect_modified to drop'
+					END CATCH
+					BEGIN TRY
+						PRINT 'Dropping qunect_last_modified' 
+						--need to clean up in case things didn't get cleaned up from the last run
+						EXEC('DROP TABLE "qunect_last_modified"')
+					END	TRY						
+					BEGIN CATCH
+						PRINT 'No qunect_last_modified to drop'
+					END CATCH
+					BEGIN TRY
+						SET @onlyNewAndModified = 0
+						SET @tempsql = 'SELECT "' + @recordIDFieldName + '" as rid, "' + @dateModifiedFieldName + '" as dateModified INTO qunect_modified FROM  OPENQUERY(QUICKBASE, ''select "' + @recordIDFieldName + '", "' + @dateModifiedFieldName + '" FROM "'+@dbid+'"'')'
+						PRINT @tempsql
+						EXEC(@tempsql)	
+						
+						IF @keepAllDeletedRecords = 0				
+						BEGIN TRY
+							PRINT 'Removing deleted records of ' + @dbid
+							SET @tempsql = 'DELETE FROM "' + @dbid + '" WHERE "' + @recordIDFieldName + '" NOT IN(SELECT rid FROM qunect_modified)'
+							EXEC(@tempsql);
+						END TRY
+						BEGIN CATCH						
+							PRINT 'Could not delete records from ' + @dbid
+							PRINT @tempsql
+							PRINT ERROR_MESSAGE()
+						END CATCH
+						
+						DECLARE @maxDateModified datetime2
+						DECLARE @maxDateModifiedText nvarchar(128)
+						
+						BEGIN TRY
+							PRINT 'Adding primary key constraint on qunect_modified'
+							SET @tempsql = 'ALTER TABLE qunect_modified ALTER COLUMN rid INT NOT NULL'
+							EXEC(@tempsql);							
+							SET @tempsql = 'ALTER TABLE qunect_modified ADD CONSTRAINT qunect_modified_pk_rid_date_mod PRIMARY KEY (rid, dateModified);'
+							EXEC(@tempsql);
+						END TRY
+						BEGIN CATCH						
+							PRINT 'Could not add primary key constraint to qunect_modified'
+							PRINT @tempsql
+							PRINT ERROR_MESSAGE()
+						END CATCH
+    
+						BEGIN TRY
+							PRINT 'Adding primary key constraint on ' + @dbid
+							SET @tempsql = 'ALTER TABLE "' + @dbid + '"  ALTER COLUMN "' + @recordIDFieldName + '" INT NOT NULL'
+							EXEC(@tempsql);
+							SET @tempsql = 'ALTER TABLE "' + @dbid + '"  ALTER COLUMN "' + @dateModifiedFieldName + '" DATETIME2 NOT NULL'
+							EXEC(@tempsql);							
+							SET @tempsql = 'ALTER TABLE "' + @dbid + '" ADD CONSTRAINT dbid_pk_rid_date_mod PRIMARY KEY ("' + @recordIDFieldName + '","' + @dateModifiedFieldName + '");'
+							EXEC(@tempsql);
+						END TRY
+						BEGIN CATCH						
+							PRINT 'Could not add primary key constraints to ' + @dbid
+							PRINT @tempsql
+							PRINT ERROR_MESSAGE()
+						END CATCH
+    	
+						SET @tempsql = 'SELECT TOP 1 qunect_modified.dateModified INTO qunect_last_modified FROM qunect_modified LEFT OUTER JOIN "' + @dbid + '" ON qunect_modified.rid = "' + @dbid + '"."' + @recordIDFieldName + '" and qunect_modified.dateModified = "' + @dbid + '"."' + @dateModifiedFieldName + '" WHERE "' + @dbid + '"."' + @dateModifiedFieldName + '" IS NULL or qunect_modified.dateModified <> "' + @dbid + '"."' + @dateModifiedFieldName + '" ORDER BY qunect_modified.dateModified  ASC'
+						PRINT @tempsql
+						EXEC(@tempsql)
+
+						BEGIN TRY
+						    PRINT 'Dropping CONSTRAINT on ' + @dbid										
+						    EXEC('ALTER TABLE "' + @dbid + '" DROP CONSTRAINT dbid_pk_rid_date_mod')
+					    END TRY
+					    BEGIN CATCH
+						    PRINT 'Could not drop CONSTRAINT on ' + @dbid	
+						    PRINT ERROR_MESSAGE()
+					    END CATCH
+
+						SET @maxDateModified = NULL
+						SELECT TOP 1 @maxDateModified = dateModified FROM qunect_last_modified ORDER BY dateModified DESC
+						DECLARE @backupCount int
+						BEGIN TRY
+							PRINT 'Dropping qunect_backup_count' 
+							--need to clean up in case things didn't get cleaned up from the last run
+							EXEC('DROP TABLE "qunect_backup_count"')
+						END	TRY						
+						BEGIN CATCH
+							PRINT 'No qunect_backup_count to drop'
+						END CATCH
+						SET @tempsql = 'SELECT COUNT(*) as count INTO "qunect_backup_count" FROM "' + @dbid + '"'
+						PRINT @tempsql
+						EXEC(@tempsql)
+						SELECT TOP 1 @backupCount = count FROM "qunect_backup_count"
+						IF @maxDateModified IS NULL AND @backupCount > 0
+						BEGIN
+							PRINT 'No records modified since last synch, backup count is ' + CAST(@backupCount AS varchar(12))	
+							SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1							
+							FETCH NEXT FROM table_cursor INTO @dbid
+							CONTINUE
+						END 
+						
+						SET @maxDateModified = DATEADD(second, -1, @maxDateModified) 
+						SET @maxDateModifiedText = (SELECT CONVERT(VARCHAR(23), @maxDateModified, 121))	
+						SET @maxDateModifiedText = '{ts '''''+ @maxDateModifiedText + '''''}'
+						PRINT 'Got last modified date from local records: ' + @maxDateModifiedText						
+						SET @tempsql = 'SELECT * INTO qunect_temp FROM  OPENQUERY(QUICKBASE, ''select ' +  @columnList + ' FROM "'+@dbid+'" WHERE ' + @dateModifiedFieldName + ' > ' + @maxDateModifiedText + ' '')'
+						PRINT @tempsql
+						EXEC(@tempsql)
+						--here we need to eliminate dupes in qunect_temp that already exist in the local copy
+						SELECT @doesTempExist = count(*) FROM sysobjects Where Name = 'qunect_temp' AND xType= 'U'
+						IF @doesTempExist = 1
+						BEGIN
+							SET @tempsql = 'DELETE Q FROM qunect_temp Q INNER JOIN "' + @dbid + '" A ON Q."' + @recordIDFieldName + '" = A."' + @recordIDFieldName + '" and Q."' + @dateModifiedFieldName + '" = A."' + @dateModifiedFieldName + '"'
+							PRINT @tempsql
+							EXEC(@tempsql)		
+							--so now we have only new or modified records in qunect_temp
+							SET @onlyNewAndModified = 1
+						END
+					END TRY
+					BEGIN CATCH
+						PRINT 'Incremental approach failed, could not create qunect_temp.'
+						PRINT ERROR_MESSAGE()
+					END CATCH
+					SELECT @doesTempExist = count(*) FROM sysobjects Where Name = 'qunect_temp' AND xType= 'U'
+					IF @doesTempExist = 0
+					BEGIN TRY
+						PRINT 'Incremental approach failed, retrieveing all records from '+@dbid+' into qunect_temp.'
+						PRINT ERROR_MESSAGE()
+						SET @tempsql = 'SELECT * INTO qunect_temp FROM  OPENQUERY(QUICKBASE, ''select ' + @columnList + ' FROM "'+@dbid+'"'')'
+						PRINT @tempsql
+						EXEC(@tempsql)								
+					END TRY
+					BEGIN CATCH
+						PRINT 'Non-Incremental approach failed, no additional records retrieved from '+@dbid+' into qunect_temp.'
+						PRINT ERROR_MESSAGE()
+					END CATCH
+				END TRY
+				BEGIN CATCH
+					PRINT 'Both incremental and non-incremental approaches failed for ' + @dbid
+				END CATCH
+				SELECT @doesTempExist = count(*) FROM sysobjects Where Name = 'qunect_temp' AND xType= 'U'
+				DECLARE @tempTableRecordCount int
+				SET @tempTableRecordCount = 0
+				IF @doesTempExist > 0
+				BEGIN
+					SELECT @tempTableRecordCount = count(*) FROM qunect_temp
+					PRINT 'Retrieved ' + CONVERT(VARCHAR(23), @tempTableRecordCount) + ' records modified since last synch.'
+				END				
+				IF @tempTableRecordCount > 0
+				BEGIN
+					SELECT @doesExist = count(*) FROM sysobjects Where Name = @dbid AND xType= 'U'
+					IF @doesTempExist > 0 and  @doesExist > 0
+					BEGIN
+						--now we need to try to do a specific insert with named columns
+						
+						IF exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_backup_columns]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+						drop table [dbo].[qunect_backup_columns]
+
+						CREATE TABLE [dbo].[qunect_backup_columns](
+						[TABLE_QUALIFIER] [nvarchar](128) NULL,
+						[TABLE_OWNER] [nvarchar](128) NULL,
+						[TABLE_NAME] [nvarchar](128) NULL,
+						[COLUMN_NAME] [nvarchar](128) NULL,
+						[DATA_TYPE] [smallint] NULL,
+						[TYPE_NAME] [nvarchar](128) NULL,
+						[PRECISION] [int] NULL,
+						[LENGTH] [int] NULL,
+						[SCALE] [smallint] NULL,
+						[RADIX] [smallint] NULL,
+						[NULLABLE] [smallint] NULL,
+						[REMARKS] [varchar](254) NULL,
+						[COLUMN_DEF] [nvarchar](4000) NULL,
+						[SQL_DATA_TYPE] [smallint] NULL,
+						[SQL_DATETIME_SUB] [smallint] NULL,
+						[CHAR_OCTET_LENGTH] [int] NULL,
+						[ORDINAL_POSITION] [int] NULL,
+						[IS_NULLABLE] [varchar](254) NULL,
+						[SS_DATA_TYPE] [tinyint] NULL
+						) ON [PRIMARY]
+
+						SET @escapeddbid = REPLACE(@dbid, '_', '[_]')
+						INSERT qunect_backup_columns EXEC('sp_columns "' + @escapeddbid + '"')
+
+						if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_temp_columns]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+						drop table [dbo].[qunect_temp_columns]
+
+						CREATE TABLE [dbo].[qunect_temp_columns](
+						[TABLE_QUALIFIER] [nvarchar](128) NULL,
+						[TABLE_OWNER] [nvarchar](128) NULL,
+						[TABLE_NAME] [nvarchar](128) NULL,
+						[COLUMN_NAME] [nvarchar](128) NULL,
+						[DATA_TYPE] [smallint] NULL,
+						[TYPE_NAME] [nvarchar](128) NULL,
+						[PRECISION] [int] NULL,
+						[LENGTH] [int] NULL,
+						[SCALE] [smallint] NULL,
+						[RADIX] [smallint] NULL,
+						[NULLABLE] [smallint] NULL,
+						[REMARKS] [varchar](254) NULL,
+						[COLUMN_DEF] [nvarchar](4000) NULL,
+						[SQL_DATA_TYPE] [smallint] NULL,
+						[SQL_DATETIME_SUB] [smallint] NULL,
+						[CHAR_OCTET_LENGTH] [int] NULL,
+						[ORDINAL_POSITION] [int] NULL,
+						[IS_NULLABLE] [varchar](254) NULL,
+						[SS_DATA_TYPE] [tinyint] NULL
+						) ON [PRIMARY]
+
+						INSERT qunect_temp_columns EXEC('sp_columns qunect_temp')
+						SELECT TOP 1 @dateModifiedFieldName = "COLUMN_NAME" FROM qunect_backup_columns WHERE [ORDINAL_POSITION] = 2
+						SELECT TOP 1 @recordIDFieldName = "COLUMN_NAME" FROM qunect_backup_columns WHERE [ORDINAL_POSITION] = 3
+					
+						BEGIN TRY
+							--we need to add columns
+							DECLARE temp_column_cursor CURSOR FOR SELECT qunect_temp_columns.COLUMN_NAME, 
+																	qunect_temp_columns.TYPE_NAME, 
+																	qunect_temp_columns.PRECISION,
+																	qunect_temp_columns.SCALE
+							FROM qunect_backup_columns RIGHT JOIN
+							qunect_temp_columns ON qunect_backup_columns.COLUMN_NAME = qunect_temp_columns.COLUMN_NAME AND 
+							qunect_backup_columns.DATA_TYPE = qunect_temp_columns.DATA_TYPE AND 
+							qunect_backup_columns.IS_NULLABLE = qunect_temp_columns.IS_NULLABLE AND 
+							qunect_backup_columns.PRECISION = qunect_temp_columns.PRECISION AND 
+							qunect_backup_columns.SS_DATA_TYPE = qunect_temp_columns.SS_DATA_TYPE
+							WHERE qunect_backup_columns.COLUMN_NAME IS NULL
+
+							DECLARE @columnNewName nvarchar(128)
+							DECLARE @columnTypeName nvarchar(128)
+							DECLARE @columnPrecision int
+							DECLARE @columnScale int
+							OPEN temp_column_cursor
+								FETCH NEXT FROM temp_column_cursor INTO @columnNewName, @columnTypeName, @columnPrecision, @columnScale
+								WHILE (@@FETCH_STATUS <> -1)
+								BEGIN		
+									IF (@@FETCH_STATUS <> -2)
+									BEGIN
+										SET @tempsql = 'ALTER TABLE "' + @dbid + '" ADD "' + @columnNewName + '" ' + @columnTypeName
+										IF @columnTypeName = 'varchar'
+										BEGIN
+											SET @tempsql = @tempsql + '(' + CONVERT(VARCHAR(23), @columnPrecision) + ')'
+										END
+										IF @columnTypeName = 'numeric'
+										BEGIN
+											SET @tempsql = @tempsql + '(' + CONVERT(VARCHAR(23), @columnPrecision) + ',' + CONVERT(VARCHAR(23), @columnScale) + ')'
+										END
+										PRINT @tempsql
+										EXEC(@tempsql)
+									END
+									FETCH NEXT FROM temp_column_cursor INTO @columnNewName, @columnTypeName, @columnPrecision, @columnScale
+								END
+							TRUNCATE TABLE qunect_backup_columns
+							INSERT qunect_backup_columns EXEC('sp_columns "' + @escapeddbid + '"')
+							DEALLOCATE temp_column_cursor
+						END TRY
+						BEGIN CATCH
+								PRINT 'Could not add column ' + @columnNewName
+								PRINT @tempsql
+								PRINT ERROR_MESSAGE()
+						END CATCH
+
+						
+						DECLARE @mergeSuccessful bit
+						SET @mergeSuccessful = 0
+						
+						BEGIN TRY
+							DECLARE column_cursor CURSOR FOR SELECT COLUMN_NAME FROM qunect_temp_columns
+							SET @columnList = ''
+							SET @comma = ''
+							OPEN column_cursor
+							
+							FETCH NEXT FROM column_cursor INTO @columnName
+							WHILE (@@FETCH_STATUS <> -1)
+							BEGIN		
+								IF (@@FETCH_STATUS <> -2)
+								BEGIN
+									SET @columnList =  @columnList + @comma + '"' +  REPLACE(@columnName, '''', '''''') + '"' 
+									SET @comma = ','
+								END
+								FETCH NEXT FROM column_cursor INTO @columnName
+							END
+							DEALLOCATE column_cursor
+							IF @onlyNewAndModified = 1 and @keepAllVersionsOfModifiedRecords = 0
+							BEGIN
+							--here we can do a delete based on record id and then an insert
+								PRINT 'Only new and modified records exist in qunect_temp, so we delete all records with the same Record ID# in local copy and then insert these new and updated records into the local copy'
+								SET @tempsql = 'DELETE S FROM "' + @dbid + '" S INNER JOIN qunect_temp A ON S."' + @recordIDFieldName + '" = A."' + @recordIDFieldName + '"'
+								PRINT @tempsql
+								EXEC(@tempsql)
+								SET @tempsql = 'INSERT INTO "' + @dbid + '" (' + @columnList + ') SELECT ' + @columnList + ' FROM qunect_temp'
+								PRINT @tempsql
+								EXEC(@tempsql)
+								SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1
+								FETCH NEXT FROM table_cursor INTO @dbid
+								CONTINUE	
+							END
+							
+							
+							--now we need to put a primary key on 
+							--we should be able to merge the contents of the backup table into the temp table
+							BEGIN TRY
+								PRINT 'Adding primary key constraint on qunect_temp'								
+								SET @tempsql = 'ALTER TABLE qunect_temp ADD CONSTRAINT pk_rid_date_mod PRIMARY KEY ("'+@recordIDFieldName+'", "' + @dateModifiedFieldName + '");'
+								EXEC(@tempsql);
+							END TRY
+							BEGIN CATCH						
+								PRINT 'Could not add constraint ' + @dbid
+								PRINT @tempsql
+								PRINT ERROR_MESSAGE()
+							END CATCH
+							SET @tempsql = 'INSERT INTO qunect_temp (' + @columnList + ') SELECT DISTINCT ' + @columnList + ' FROM "' + @dbid + '"'
+							PRINT @tempsql
+							EXEC(@tempsql)
+							SET @mergeSuccessful = 1
+						END TRY
+						BEGIN CATCH
+							PRINT 'Could not merge backup into temp table.'
+							PRINT ERROR_MESSAGE()
+							SET @mergeSuccessful = 0							
+						END CATCH
+						
+						IF @mergeSuccessful = 0
+						BEGIN TRY
+							--so here we should rename the backup table with today's timestamp
+							--and fetch all the records into the backup table
+							PRINT 'Merge unsuccessful, copying the backup table to a table with today''s timestamp as suffix in name.'
+							DECLARE @nowText nvarchar(256)
+							SET @nowText = @dbid + CONVERT(VARCHAR(23), GETDATE(), 121)
+							SET @tempsql = 'SELECT * INTO "' + @nowText + '" FROM "' + @dbid + '"'
+							PRINT @tempsql
+							EXEC(@tempsql)
+							BEGIN TRY
+								PRINT 'Dropping "'+@dbid+'"'						
+								EXEC('DROP TABLE "'+@dbid+'"')
+								SET @tempsql = 'SELECT * INTO "'+@dbid+'" FROM  OPENQUERY(QUICKBASE, ''select ' + @columnList + ' FROM "'+@dbid+'"'')'
+								PRINT @tempsql
+								EXEC(@tempsql)
+								SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1
+								FETCH NEXT FROM table_cursor INTO @dbid
+								CONTINUE
+							END TRY
+							BEGIN CATCH
+								PRINT 'Could not drop local ' + @dbid + ' and fetch new copy.' 
+								PRINT ERROR_MESSAGE()
+							END CATCH
+							
+						END TRY
+						BEGIN CATCH
+							PRINT 'Copying the backup table to one with today''s timestamp as suffix.'
+							PRINT ERROR_MESSAGE()
+						END CATCH
+						
+					END
+					IF @keepAllVersionsOfModifiedRecords = 0 and @mergeSuccessful = 1													
+					BEGIN TRY
+						PRINT 'Deduping qunect_temp of ' + @dbid
+						SET @tempsql = '
+						DECLARE @rid int;
+						DECLARE @prev_rid int;
+						
+						SET @prev_rid = 0;
+						DECLARE rid_cursor CURSOR FORWARD_ONLY FOR 
+						SELECT "'+@recordIDFieldName+'"
+						FROM qunect_temp
+						ORDER BY "'+@recordIDFieldName+'" DESC, "' + @dateModifiedFieldName + '" DESC FOR UPDATE;
+						
+						OPEN rid_cursor;
+						FETCH NEXT FROM rid_cursor INTO @rid
+						WHILE @@FETCH_STATUS = 0
+						BEGIN
+							IF @rid = @prev_rid
+							BEGIN								
+								DELETE FROM qunect_temp
+								WHERE CURRENT OF rid_cursor;
+							END
+							SET @prev_rid = @rid							
+							FETCH NEXT FROM rid_cursor INTO @rid						
+						END
+						DEALLOCATE rid_cursor'
+						EXEC(@tempsql);
+					END TRY
+					BEGIN CATCH						
+						PRINT 'Could not dedupe ' + @dbid
+						PRINT @tempsql
+						PRINT ERROR_MESSAGE()
+					END CATCH					
+					
+					--so now we copy from the qunect_temp into a new backup copy
+					--but first we have to drop the constraint
+					BEGIN TRY
+						PRINT 'Dropping CONSTRAINT on qunect_temp'						
+						EXEC('ALTER TABLE qunect_temp DROP CONSTRAINT pk_rid_date_mod')
+					END TRY
+					BEGIN CATCH
+						PRINT 'Could not drop CONSTRAINT on qunect_temp'
+						PRINT ERROR_MESSAGE()
+					END CATCH
+					BEGIN TRY
+						PRINT 'Dropping "'+@dbid+'"'						
+						EXEC('DROP TABLE "'+@dbid+'"')
+					END TRY
+					BEGIN CATCH
+						PRINT 'Could not drop ' + @dbid
+						PRINT ERROR_MESSAGE()
+					END CATCH
+					BEGIN TRY						
+						SET @tempsql = 'SELECT * INTO "' + @dbid + '" FROM qunect_temp'
+						PRINT @tempsql
+						EXEC(@tempsql)		
+						PRINT 'Copying temp data into backup table succeeded.'
+						SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1
+					END TRY
+					BEGIN CATCH
+						PRINT 'Copying temp data into backup table failed.'
+					END CATCH									
+				END
+				ELSE
+				BEGIN
+					PRINT 'No records have been modified since last synch.'
+					SET @numQuickBaseTablesBackedUp = @numQuickBaseTablesBackedUp + 1				
+				END
+			END
+		END
+		FETCH NEXT FROM table_cursor INTO @dbid
+	END
+	CLOSE table_cursor
+	DEALLOCATE table_cursor	
+	if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_tables_to_sync]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	BEGIN
+		drop table [dbo].[qunect_tables_to_sync]
+	END
+	return @numQuickBaseTables - @numQuickBaseTablesBackedUp
+END TRY
+BEGIN CATCH
+	BEGIN
+		PRINT ERROR_MESSAGE()
+		drop table [dbo].[qunect_tables_to_sync]
+		return -1
+	END
+END CATCH
+</pre>
+</p>
+</body>
+</html>
+
+			   

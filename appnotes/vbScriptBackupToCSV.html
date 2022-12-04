@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Backing up a Quickbase table to a CSV file with VBScript</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Backing up a Quickbase table to a CSV file with VBScript</p>
+        <p class=normal>This VB Script will open up a Quickbase table specified by the DBID
+        on the command line and write it's contents to the console or to a file.
+        The field names will appear as the first row of the output.
+        You can find the DBID of your Quickbase table by reading the
+        <a href="dbid.html">How to Find the DBID of a Quickbase Table</a> application note.        
+        </p>
+
+<p class=code>
+Copy the code at the bottom of this page to the clipboard and paste the contents into a blank Notepad document.
+Save the Notepad document using a <strong>Save as type</strong> of <strong>All Files</strong>
+and an <strong>Encoding</strong> of <strong>ANSI</strong>. Use the file name <strong>QuNectBackupToCSV.vbs</strong>.
+Remember where in the file hierarchy you saved the file. After you've saved the file you'll need to open up
+a command prompt window. You can do this by <strong>Start->Run...->cmd</strong>. Then you'll need to navigate to the 
+directory where you saved the <strong>QuNectBackupToCSV.vbs</strong> file.
+The command line for the script needs to look like this:
+</p>
+<pre>
+cscript //NoLogo //U QuNectBackupToCSV.vbs yourdbid > yourbackupfile.csv
+</pre>
+<p class=code>
+You'll need to replace the <strong>yourdbid</strong> with the DBID of your Quickbase table.
+Also you should replace <strong>yourbackupfile.csv</strong> with a filename of your choice.
+If you want to use a DSN other than <strong>QuickBase via QuNect</strong> then you can supply your DSN's name like
+this on the command line:
+</p>
+<pre>
+cscript //NoLogo //U QuNectBackupToCSV.vbs yourdbid "Your Own QuNect DSN Name" > yourbackupfile.csv
+</pre>
+
+<p class=code>
+If you want to backup file attachments, simply configure your DSN to download file attachments. This feature is available only
+with the 2011 version of QuNect ODBC for QuickBase.
+</p>
+
+<pre>
+if WScript.arguments.count < 1 then
+    WScript.echo "Please supply at least one command line parameter."
+    WScript.echo "The first command line parameter should be the dbid of the Quickbase table that you want to backup."    
+    WScript.echo "The second optional command line parameter should be the DSN."
+    WScript.echo "In the absence of a second command line parameter the DSN 'QuickBase via QuNect' will be used."
+    WScript.echo "The command line should look like this:"
+    WScript.echo "cscript //NoLogo //U QuNectBackupToCSV.vbs yourdbid optionalDSN > yourbackupfile.csv"
+    WScript.echo "The above command line will backup the table with a dbid of yourdbid to the file yourbackupfile.csv"
+    WScript.Quit(-1)
+end if 
+
+Dim Conn
+Dim rs
+Set Conn = CreateObject("ADODB.Connection")
+dim connectionString
+dim DSN
+DSN = "QuickBase via QuNect"
+if WScript.arguments.count = 2 then
+    DSN = WScript.arguments.item(1)
+end if
+connectionString = "DSN=" & DSN & ";"
+Conn.Open connectionString 
+
+Set Rs = CreateObject("ADODB.Recordset")
+
+Rs.Open "select * from """ & WScript.arguments.item(0) & """" , Conn
+
+dim i
+dim line
+
+if Rs.BOF then
+    WScript.echo "The table contains no records."
+    WScript.Quit(-2)
+end if
+for i = 0 to Rs.Fields.count - 1
+    line = line & """" & replace(Cstr(Rs.fields(i).name), """", """""") & ""","
+next
+WScript.echo line
+do while not Rs.EOF
+    line = ""
+    for i = 0 to Rs.Fields.count - 1        
+        if isnull(Rs.fields.item(i)) then
+            line = line & ","
+        else            
+            line = line & """" & replace(Cstr(Rs.fields.item(i)), """", """""") & ""","
+        end if        
+    next
+    WScript.echo line
+    Rs.movenext()
+loop
+
+Conn.close
+</pre>
+</p>
+    </body>
+</html>
+
+               

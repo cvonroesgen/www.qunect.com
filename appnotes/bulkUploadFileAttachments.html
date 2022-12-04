@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Bulk Uploading File Attachments to Quickbase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Bulk Uploading File Attachments to Quickbase</p>
+        
+        <p class=normal>To bulk upload files to a file attachment field in Quickbase you want to make sure that 
+        you have your DSN configured with <strong>File Attachment Fields -> Represent as:</strong> set to <strong>Text field with URL to file attachment in Quickbase</strong>
+        If you are using a connection string instead of a DSN make sure you are NOT using the <strong>FILE=BINARY</strong> or the <strong>FILEPATH=C:\Folder1\Folder2</strong> 
+        <a href="connectionString.html">connection string</a> parameters.
+        The file attachment field in Quickbase is presented via QuNect ODBC for QuickBase as a text field. The text field contains the URL
+        to the file attachment itself. If you set this text value using either an INSERT or an UPDATE statement to the fully qualified path of a file 
+        on the computer where QuNect ODBC for QuickBase is installed, QuNect ODBC for QuickBase will upload that file into the file attachment field.
+        For example the following SQL statement will create a new record placing the file <strong>C:\autoexec.bat</strong> into the file attachment
+        field called <strong>Batch Files</strong></p>
+<p class=code>
+<pre>
+INSERT INTO "File Table bepza6nb3" ("Batch Files") Values ('C:\autoexec.bat')
+</pre>
+</p>
+<p class=normal>
+    You could upload the C:\autoexec.bat file to all records that did not already 
+    have an attached file in the <strong>Batch Files</strong> field like this:
+</p>
+<p class=code>
+<pre>
+UPDATE "File Table bepza6nb3" SET "Batch Files"='C:\autoexec.bat' WHERE "Batch Files"=''
+</pre>
+</p>
+<p class=normal>    
+    Both of these examples are not that useful. But they serve to illustrate the basic capablity.
+    To do a bulk upload you need to have preexisting records to upload the files into. The records
+    need to have enough information in them to let you know which file belongs in which record. So in the simplest case
+    if there was a text field called <strong>File Name</strong> that contained the name of the file
+    that needed to be uploaded to the <strong>Picture</strong> field, then you could write a SQL statement like this to upload a folder 
+    full of pictures. Let's assume the folder full of pictures is <strong>D:\Employees\Pictures\</strong>
+</p>
+<p class=code>
+<pre>
+UPDATE "Employees beqra6nb3" SET "Picture"={fn CONCAT('D:\Employees\Pictures\', "File Name")} WHERE "Picture"='' and "File Name" <> ''
+</pre>
+</p>
+<p class=normal>    
+    If the <strong>File Name</strong> contained only the prefix of the file name but not the file extension then you could
+    append the file extension like this:
+</p>
+<p class=code>
+<pre>
+UPDATE "Employees beqra6nb3" SET "Picture"={fn CONCAT({fn CONCAT('D:\Employees\Pictures\', "File Name")}, '.jpg')} WHERE "Picture"='' and "File Name" <> ''
+</pre>
+</p>
+<p class=normal>    
+    If you don't have preexisting records then you can create them with the filename in a text field by running a directory listing of the folder
+    that contains the files you want to upload. If you pipe this directory listing to a file you can import the directory listing file into the Quickbase table
+    where you want to bulk upload the file attachments. Now you have preexisting records with the filenames in a regular text field. The DOS command
+    to create a directory listing (of the directory <strong>C:\Employees\Pictures</strong>) in a file (called <strong>filewithfilenames.csv</strong>) looks like this:
+</p>
+<p class=code>
+<pre>
+C:\Employees\Pictures>dir /b > filewithfilenames.csv
+</pre>
+</p>
+</body>
+</body>
+</html>
+
+               

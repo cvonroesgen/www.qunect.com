@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta name="verify-v1" content="FpUf4NYPtSSDQ1FpDIBPk88GlOJBvPJ7iiDblvs3Vq8=" />
+        <title>QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>		
+    <script language=jscript>
+   
+    var doc;
+    function test(s, v, id)
+        {
+        var e;
+        try
+            {
+            var foo = new ActiveXObject(s);
+            document.getElementById(id).innerText =  v + " installed.";
+            document.getElementById(id).style.color = "green";
+            document.getElementById(id).style.fontWeight = "bold";
+            return 1;
+            }
+        catch(e)
+            {
+            document.getElementById(id).innerText =  v + " not installed.";
+            document.getElementById(id).style.color = "red";
+            return 0;
+            }
+        }
+    function init()
+        {
+        doc = test("MSXML2.DOMDocument.6.0", "MSXML version 6.x", "msxml6");
+        doc = test("MSXML2.DOMDocument.4.0", "MSXML version 4.x", "msxml4");
+        doc = test("MSXML2.DOMDocument.3.0", "MSXML version 3.x", "msxml3");
+        doc = test("MSXML2.DOMDocument.2.6", "MSXML version 2.6", "msxml26");
+        if (!doc) doc=test("MSXML2.DOMDocument.2.5", "MSXML version 2.5", "msxml25");
+        if (!doc) doc=test("MSXML2.DOMDocument.2.0", "MSXML version 2.0", "msxml2");
+        }
+    
+</script>
+</head>
+<body onload="init()">
+        <div class="banner"><img id=logo src=i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Your MSXML Configuration</p>
+        <p class=question>MSXML 6</p>
+        <p class=answer id=msxml6></p>
+        <p class=question>MSXML 4</p>
+        <p class=answer id=msxml4></p>
+        <p class=question>MSXML 3</p>
+        <p class=answer id=msxml3></p>
+        <p class=question>MSXML 2.6</p>
+        <p class=answer id=msxml26></p>
+        <p class=question>MSXML 2.5</p>
+        <p class=answer id=msxml25></p>
+        <p class=question>MSXML 2</p>
+        <p class=answer id=msxml2></p>
+        
+
+
+
+</body>
+</html>
+

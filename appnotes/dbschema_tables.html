@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Cannot obtain the schema rowset "DBSCHEMA_TABLES" for OLE DB provider MSDASQL for linked server "QUICKBASE"</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+
+        <p class=subhead>Cannot obtain the schema rowset "DBSCHEMA_TABLES" for OLE DB provider MSDASQL for linked server "QUICKBASE"</p>
+<p><img src="i/DBSCHEMA_TABLES.png"/></p>
+        <p class=normal>The error <strong>Cannot obtain the schema rowset "DBSCHEMA_TABLES" for OLE DB provider MSDASQL for linked server "QUICKBASE"</strong> occurs when 
+		QuNect ODBC for QuickBase cannot make a network connection to Quickbase. 
+		The linked server will test successfully. Clicking the QuNect ODBC for QuickBase "Test Connection" button in the ODBC DSN configuration dialog will yield a successful test.
+		But SQL Server itself cannot access the list of tables in Quickbase.
+		The most common cause is that the Windows user that the SQL Server service is running as does not have permission
+		to access the Internet. One way to resolve this is to restart SQL Server using your own user credentials. 
+		The other option is to contact your network administrators and have them allow 
+		the SQL Server user account to have Internet access.
+		</p>
+
+		
+    </body>
+</html>
+
+               

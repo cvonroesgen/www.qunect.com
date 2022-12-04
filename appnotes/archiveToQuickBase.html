@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Archiving Records from one Quickbase Application to a copy of the Application</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Archiving Records from one Quickbase Application to a copy of the Application</p>
+        <p class=normal>The following method will allow you to create space in your Quickbase application
+            while preserving your archived records in an identical Quickbase application.</p>
+<p class=normal>
+<ol>
+<li>Create a checkbox field at the top level of your parent child relationships. Whether it's a regular checkbox field or a formula checkbox field is up to you.</li>
+<li>Create lookup fields for the checkbox field you created in step 1 at every level of the parent child hierarchy.</li> 
+<li>Make a copy of your application without data.</li>
+<li>Identify every table you want to archive. This may be all of the tables.</li>
+<li>For each of the tables in the copy that will be archived that is the parent table in a relationship and whose key field is the built-in field called Record ID# you'll need to copy the Record ID# field.
+
+Then make this field the key field. This will create a new reference field in each of the child tables and turn the old reference field into a lookup field.</li>
+<li>Write a series of SQL INSERT statements that copies the records that you want to archive based on the checkbox fields you created in step 1 and 2 to their respective tables.
+In each case where there is a table that is a parent table in a relationship and whose key field is the built-in field called Record ID#,
+you'll want to copy the Record ID# field to the copy of the Record ID# field you created in the step 5. In each case where there is 
+a table that is a child table in such a relationship, you'll want to copy the reference field to the new reference field you created in the step 5 when you changed the key field in the parent table.
+</li>
+<li>Write a series of SQL DELETE statements do delete the records that were archived based on the value of the checkbox fields created in step 1 and 2. The order of these SQL delete statements must proceed from the lowest level child table of the parent child hierarchy to the highest level parent.</li>
+<li>Configure your DSN to represent file attachment fields as a <strong>Text field with File URL to file downloaded to local disk.</strong>. This will copy the current revision of your file attachments as well as all your other data.</li>
+</ol>
+</p>
+    </body>
+</html>
+
+               

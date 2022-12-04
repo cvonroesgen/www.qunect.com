@@ -1,0 +1,570 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Creating a Connection String</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+        <script>
+            function update()
+                {
+				byID("error").value = "";
+                var connString = "";
+                if(byID("withDSN").checked)
+                    {
+                    byID("txtDSN").style.display = "";
+                    connString = "DSN=" + byID("txtDSN").value + ";";
+                    
+                    }
+                else if(byID("DSNless").checked)
+                    {
+                    connString = "Driver={QuNect ODBC for QuickBase};";
+                    byID("txtDSN").style.display = "none";
+                    }
+                if(byID("user").checked)
+                    {
+                    byID("username").style.display = "";
+                    if(byID("username").value.match(/\;/))
+						{
+						byID("error").textContent = "Your username has a semicolon so you'll need to use QuNect ODBC for QuickBase version x.19.08.68 or later. ";
+						connString += "UID={" + byID("username").value.replace(/\}/g, "}}") + "};";
+						}
+					else
+						{
+						connString += "UID=" + byID("username").value + ";";
+						}
+					}
+                else if(byID("nouser").checked)
+                    {
+                    byID("username").style.display = "none";
+                    }
+                if(byID("passwd").checked)
+                    {
+                    byID("password").style.display = "";
+					if(byID("password").value.match(/\;/))
+						{
+						byID("error").textContent += "Your password has a semicolon so you'll need to use QuNect ODBC for QuickBase version x.19.08.68 or later. ";
+						connString += "PWDISPASSWORD=1;PWD={" + byID("password").value.replace(/\}/g, "}}") + "};";
+						}
+					else
+						{
+						connString += "PWD=" + byID("password").value + ";";
+						}
+                    }
+                else if(byID("nopasswd").checked)
+                    {
+                    byID("password").style.display = "none";
+                    }
+				if(byID("usertoken").checked)
+                    {
+                    byID("password").style.display = "";
+					connString += "PWDISPASSWORD=0;PWD=" + byID("password").value + ";";
+                    }
+				else if(byID("usertoken2021").checked)
+                    {
+                    byID("password").style.display = "";
+					connString += "USERTOKEN=" + byID("password").value + ";";
+                    }
+                connString += "QUICKBASESERVER=" + byID("txtserver").value + ";";                
+                if(byID("customapptoken").checked)
+                    {
+                    connString += "APPTOKEN=" + byID("apptokentext").value + ";";
+                    byID("apptokentext").style.display = "";
+                    }
+                if(byID("defapptoken").checked)
+                    {
+                    byID("apptokentext").style.display = "none";
+                    }
+                if(byID("proxydetect").checked)
+                    {
+                    connString += "DETECTPROXY=1;";
+                    }
+                if(byID("fieldids").checked)
+                    {
+                    connString += "USEFIDS=1;";
+                    }
+                if(byID("textnull").checked)
+                    {
+                    connString += "TEXTNULL=1;";
+                    }
+				if(byID("multiplyby100").checked)
+                    {
+                    connString += "PERCENTTIMES100=1;";
+                    }
+                if(byID("rawuser").checked)
+                    {
+                    connString += "RAWUSERFIELD=1;";
+                    }
+                if(byID("filebinary").checked)
+                    {
+                    byID("filepathspan").style.display = "none";
+                    connString += "FILE=BINARY;";
+                    }
+				else if(byID("filetext").checked)
+                    {
+                    byID("filepathspan").style.display = "none";
+                    }
+                else if(byID("filepath").checked)
+                    {
+                    byID("filepathspan").style.display = "";
+                    connString += "FILE=DISK;FILEPATH=" + byID("filepathvalue").value + ";";
+                    }
+                if(byID("allrevisions").checked)
+                    {
+                    connString += "ALLREVISIONS=1;";
+                    }
+				if(byID("allrevisionsandurls").checked)
+                    {
+                    connString += "ALLREVISIONS=ALL;";
+                    }
+                if(byID("ignore").checked)
+                    {
+                    connString += "IGNOREMISSINGFILE=1;";
+                    }
+                if(byID("withdur").checked)
+                    {
+                    byID("choosedur").style.display = "";
+                    connString += "DURATION=" + byID("choosedur").value + ";";
+                    }
+                else
+                    {
+                    byID("choosedur").style.display = "none";
+                    }
+                if(byID("tempdir").checked)
+                    {
+                    byID("tempdirtext").style.display = "";
+					connString += "TEMPDIR=" + byID("tempdirtext").value + ";";
+                    }
+				else
+					{
+					byID("tempdirtext").style.display = "none";
+					}
+                if(byID("aliases").checked)
+                    {
+                    byID("aliasesdbid").style.display = "";
+					connString += "ALIASDBID=" + byID("aliasesdbid").value + ";";
+                    }
+				else
+					{
+					byID("aliasesdbid").style.display = "none";
+					}
+                if(byID("characters").checked)
+                    {
+                    byID("choosecharacters").style.display = "none";
+                    }
+                if(byID("withcharacters").checked)
+                    {
+                    byID("choosecharacters").style.display = "";
+                    connString += "FIELDNAMECHARACTERS=" + byID("choosecharacters").value + ";";
+                    }
+                if(byID("logsql").checked)
+                    {
+                    connString += "LOGSQL=1;";
+                    }
+				if(byID("logapi").checked)
+                    {
+                    connString += "LOGAPI=1;";
+                    }
+				if(byID("dsncreds").checked)
+                    {
+                    connString += "USEDSNCREDENTIALS=1;";
+                    }
+				if(byID("chunks").checked)
+                    {
+					byID("chunksize").style.display = "";
+                    connString += "CSVCHUNKSIZE=" + byID("chunksize").value + ";";
+                    }
+				if(byID("customchunks").checked)
+                    {
+					byID("doquerychunksize").style.display = "";
+                    connString += "DOQUERYCHUNKSIZE=" + byID("doquerychunksize").value + ";";
+                    }
+				if(byID("adminonly").checked)
+                    {
+                    connString += "ADMINONLY=1;";
+                    }
+				if(byID("allowkeyfieldupdates").checked)
+                    {
+                    connString += "ALLOWKEYFIELDUPDATES=1;";
+                    }
+				if(byID("ignoredupefieldnames").checked)
+					{
+                    connString += "IGNOREDUPEFIELDNAMES=1;";
+                    }
+				if(byID("dontfollow").checked)
+					{
+                    connString += "DONTFOLLOWRELATIONSHIPS=1;";
+                    }
+                byID("connstring").value = connString;
+                }
+            
+            function byID(id)
+                {
+                return document.getElementById(id);
+                }
+        </script>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Creating a Connection String</p>
+        <p class=normal>
+            A ODBC connection string tells the ODBC driver manager which ODBC driver to use and also contains various
+            parameters that the ODBC driver manager passes down to the ODBC driver itself.
+            The following configurator will walk you through all the options available for
+            the QuNect ODBC for QuickBase ODBC driver.
+        </p>
+        <p class=normal>
+		<span id=error style="color:red"></span>
+        <textarea id=connstring rows=6 cols=80>As you make choices below your connection string will appear here.
+        When you're finished configuring, you can copy and paste your connection string from here into your code or your application.</textarea>
+        </p>
+        <table class=connectionstring>
+            <tr>
+                <td>                
+                    <input type=text value="" name=server id=txtserver onKeyUp="update();">
+                </td>
+                <td>
+                    Please enter the Quickbase Server name you type into the URL that you use to access Quickbase in your browser. This would be something like
+                    <strong>mycompany.quickbase.com</strong>.
+					<a href="/flash/configure.html"><img border=0 src="/i/youtube.png">&nbsp;<strong>Please watch this getting started video</strong></a>
+					to learn more about the Quickbase Server property.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=DSN value=no id=DSNless onclick=update() /> Use a DSN-less connection<br/>
+                    <input type=radio name=DSN value=yes id=withDSN onclick=update() /> Use a DSN<br/>
+                    <input type=text value="QuickBase via QuNect" id=txtDSN style=display:none onKeyUp="update();">
+                </td>
+                <td>
+                    The first decision you have to make in creating a connection string is whether or not to use a DSN.
+                    A DSN (Data Source Name) is a configuration for an ODBC driver that is stored in the registry.
+                    When you install QuNect ODBC for QuickBase a DSNs are created that start with <strong>QuickBase via QuNect</strong>.
+                    However the DSNs do not have a username, password or proper Quickbase Server associated with them until you configure them.
+                    Please read the <a href="gettingStarted.html">Getting Started</a> application note or 
+					<a href="/flash/configure.html"><img border=0 src="/i/youtube.png">&nbsp;<strong>watch this getting started video</strong></a>
+					to learn how to configure your DSNs.
+                    After installation you can create your own additional DSNs and give them any name you wish.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=usr value=no id=nouser onclick=update() /> Do not specify a username<br/>
+                    <input type=radio name=usr value=yes id=user onclick=update() /> Specify a username<br/>
+                    <input type=text name=username id=username style=display:none onKeyUp="update();">
+                </td>
+                <td>
+                    If you've specifed a DSN above then you don't have to specify a username here and the username saved in the DSN will be used.
+                    You can specify a username here while using a DSN and the username you specify here will take precedence over the one
+                    saved in the DSN. Usernames are either the email address you signed up to Quickbase with or a Quickbase screen name.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=pwd value=no id=nopasswd onclick=update() /> Do not specify a password or user token<br/>
+                    <input type=radio name=pwd value=yes id=passwd onclick=update() /> Specify a password<br/>
+					<input type=radio name=pwd value=usertoken id=usertoken onclick=update() /> Specify a user token<br/>
+					<input type=radio name=pwd value=usertoken id=usertoken2021 onclick=update() /> Specify a user token (QuNect 2021 and later only)<br/>
+                    <input type=text name=password id=password style=display:none onKeyUp="update();">
+                </td>
+                <td>
+                    If you've specifed a DSN above then you don't have to specify a password or user token here and the password or user token saved in the DSN will be used.
+                    You can specify a password or user token here while using a DSN and the password or user token you specify here will take precedence over the one
+                    saved in the DSN.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=apptoken value=no id=defapptoken onclick=update() /> Do not use an application token<br/>
+                    <input type=radio name=apptoken value=yes id=customapptoken onclick=update() /> Use your application token <br/>
+                    <input type=text value="" id=apptokentext style=display:none onKeyUp="update();" size=60>
+                </td>
+                <td>
+                    By default applications require application tokens unless you use a user token instead of a password. However application tokens can be turned off on an Quickbase application by Quickbase application basis.
+					If your Quickbase application requires application tokens then you may want to specify your own. You do not need an application token if your supply a <a href="/flash/UserToken.html">usertoken</a>.
+                    Please read the Quickbase help on <a href="http://help.quickbase.com/user-assistance/app_tokens.html">Application Tokens</a> and 
+					<a href="/flash/configure.html"><img border=0 src="/i/youtube.png">&nbsp;<strong>watch this getting started video</strong></a>
+					to learn more about the application tokens.
+                </td>
+            </tr>
+			<tr>
+                <td>
+                    <input type=radio name=proxy value=no id=noproxydetect onclick=update() /> Do not try to connect through a proxy server<br/>
+                    <input type=radio name=proxy value=yes id=proxydetect onclick=update() /> Find a proxy server and connect through the proxy server<br/>
+                </td>
+                <td>
+                    In some local area networks you need to connect through a proxy server to get to Quickbase. If this is the case then you'll need to 
+                    put this on the connection string. With MS Windows, if DETECTPROXY=1, and there is no proxy server QuNect ODBC for QuickBase will still successfully connect but
+                    with an initial delay of a quarter of a minute. On Linux, if DETECTPROXY=1, and there is no https_proxy environment variable, QuNect ODBC for QuickBase will return an error.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=fid value=no id=nofieldids onclick=update() /> I want to use field names<br/>
+                    <input type=radio name=fid value=yes id=fieldids onclick=update() /> I want to use fids<br/>
+                </td>
+                <td>
+                    Every Quickbase field has both a name and <a href="fid.html">field identifier (fid)</a>. Field names can be changed by an administrator.
+                    Fids cannot be changed. Once a field is created it always has the same fid. Within a table a fid is unique and if a
+                    field is deleted its fid is never reused. So if you want to prevent the changing of field names from effecting
+                    your SQL statements then you should set this option to use fids.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=null value=no id=textnotnull onclick=update() /> Empty text fields are not null<br/>
+                    <input type=radio name=null value=yes id=textnull onclick=update() /> Empty text fields are null                    
+                </td>
+                <td>
+                    Quickbase does not distinguish between an initially empty text field and a text field that used to contain text and no longer does.
+                    Another way to say this is that there is no such concept as a NULL value for text fields in Quickbase. So the default
+                    behaviour for QuNect ODBC for QuickBase is to never report text fields as having a NULL value. However you can force
+                    QuNect ODBC for QuickBase to report empty text fields as NULL.
+                </td>
+            </tr>
+			<tr>
+                <td>
+                    <input type=radio name=percent value=no id=multiplyby1 onclick=update() />Leave numeric values unchanged when inserting or updating percent fields.<br/>
+                    <input type=radio name=percent value=yes id=multiplyby100 onclick=update() /> Multiply numeric values by 100 when inserting or updating percent fields.                    
+                </td>
+                <td>
+                    Quickbase does not distinguish between an initially empty text field and a text field that used to contain text and no longer does.
+                    Another way to say this is that there is no such concept as a NULL value for text fields in Quickbase. So the default
+                    behaviour for QuNect ODBC for QuickBase is to never report text fields as having a NULL value. However you can force
+                    QuNect ODBC for QuickBase to report empty text fields as NULL.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=UID value=no id=emailuser onclick=update() /> User fields are email addresses or screennames<br/>
+                    <input type=radio name=UID value=yes id=rawuser onclick=update() /> User fields are invariant user identifiers (uids)                    
+                </td>
+                <td>
+                    Useful if you want to be able to keep track if Quickbase users even when they change their email address or screennames.
+                    You can always get the email address or screenname from a formula text field that has this formula:
+                    <strong>ToText([User field name])</strong>. But there is no Quickbase formula that will give you a user field's uid value.
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <input type=radio name=file value=no id=filetext onclick=update() /> Text File Attachment fields<br/>
+                    <input type=radio name=file value=yes id=filebinary onclick=update() /> Binary File Attachment fields<br/>
+                    <input type=radio name=file value=yes id=filepath onclick=update() /> Download File Attachments to disc<br/>
+                    <span id="filepathspan" style="display:none">Path do download file attachments: <input type=text size=30 value="" name=filepath id=filepathvalue  onKeyUp="update();"></span>
+                </td>
+                <td>
+                    By default QuNect ODBC for QuickBase presents Quickbase file attachment fields as a text field containing a URL to the attached file.
+                    If you set this field to a fully qualified path on your local computer (e.g. c:\projects\inprogress\stage1.mpp), QuNect ODBC for QuickBase will upload that file from
+                    your hard drive to Quickbase. But you can change this behavior to make QuNect ODBC for QuickBase present file attachment fields as binary fields.
+                    This is particularly useful with SQL Server. In SQL Server binary fields are of type picture. You have another option instead of 
+                    the binary field type you can specify a path to a local disc and QuNect ODBC for QuickBase will download attachments to that folder.
+                    Please read the application note entitled
+                    <a href="fileAttachments.html">Downloading File Attachments from Quickbase into SQL Server</a> for more information.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=revision value=no id=currentrevision onclick=update() /> Download only the current revision of file attachment fields<br/>
+                    <input type=radio name=revision value=yes id=allrevisions onclick=update() /> Download all revisions of file attachment fields but only the file URL of the current revision<br/>
+					<input type=radio name=revision value=yes id=allrevisionsandurls onclick=update() /> Download all revisions of file attachment fields and all file URLs                   
+                </td>
+                <td>
+                    Only matters if you've chosen to specify that you want file attachments downloaded using the connection string option above.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=ignore value=no id=donotignore onclick=update() /> Generate an error if uploading a file that does not exist<br/>
+                    <input type=radio name=ignore value=yes id=ignore onclick=update() /> Ignore and continue when encountering missing files for upload                    
+                </td>
+                <td>
+                    QuNect ODBC for QuickBase will upload a local file to a file attachment field if you set the file attachment field's value to the 
+                    path of a file on local disk. If the file does not exist an error is generated by default. If you use this connection string parameter
+                    you can ignore these errors when processing multiple records.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=dur value=no id=dur onclick=update() /> Use the default duration of days on input and milliseconds on output<br/>
+                    <input type=radio name=dur value=yes id=withdur onclick=update() /> Use a single specific duration on input and output<br/>
+                    <select id=choosedur style=display:none onchange="update()">
+                        <option value=sec>Seconds</option>
+                        <option value=min>Minutes</option>
+                        <option value=hour>Hours</option>
+                        <option value=day>Days</option>
+                        <option value=week>Weeks</option>
+                    </select>
+                </td>
+                <td>
+                    Duration fields (a numeric field) present the number of milliSeconds.
+                    And when updated or inserted the supplied number is interpreted as days.
+                    However if the DURATION parameter is set to either:
+                        <ul>
+                            <li>sec</li>
+                            <li>min</li>
+                            <li>hour</li>
+                            <li>day</li>
+                            <li>week</li>
+                        </ul>
+                    Both inputs and outputs to the numeric duration fields will be interpreted in those units.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type=radio name=characters value=no id=characters onclick=update() /> Use the default set of characters for field names<br/>
+                    <input type=radio name=characters value=yes id=withcharacters onclick=update() /> Specify the set of characters for field names<br/>
+                    <select id=choosecharacters style=display:none onchange="update()">
+                        <option value=lnuhs>letters, numbers, underscores, hyphens and spaces</option>
+                        <option value=lnus>letters, numbers, underscores, and spaces</option>
+                        <option value=lnu>letters, numbers, and underscores</option>
+                        <option value=lnunc>letters, numbers, and underscores, no colons</option>
+						<option value=lnuncwi>letters, numbers, and underscores, no colons with initial digits</option>
+                        <option value=msaccess>any except period, exclamation, square brackets, backtick</option>
+                        <option value=all>all characters</option>
+                    </select>
+                </td>
+                <td>
+                    Quickbase allows a far wider range of characters in field names and table names than most other database systems.
+                    Here you can specify which characters QuNect ODBC for QuickBase allows in field names and table names. Characters that are not allowed are 
+                    replaced with the underscore character. This setting does not impact field names and table names appearing in MS Access tables linked 
+                    with QuNect ODBC for QuickBase.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input name="dir" type=radio value=no id=notempdir onclick=update() /> Do not specify temp directory<br/>
+                    <input name="dir" type=radio value=yes id=tempdir onclick=update() /> Specify temp directory<br/>
+                    <input type=text value="" id=tempdirtext style=display:none onKeyUp="update();" size=60>
+                </td>
+                <td>
+					Versions of QuNect ODBC for QuickBase before the 2018 version use temporary files to perform sorting operations that Quickbase cannot handle.
+					Versions 2018 forward perform all sorting operations in memory.
+					This setting allows you to specify the directory where these temporary files will be created. You can leave
+					this setting blank and QuNect ODBC for QuickBase will ask the operating system to designate a temporary directory.
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="alias" type=radio value=no id=noaliases onclick=update() /> Do not use table aliases<br/>
+                    <input name="alias" type=radio value=yes id=aliases onclick=update() /> Use table aliases<br/>
+                    <input type=text value="" id=aliasesdbid style=display:none onKeyUp="update();" size=15>
+                </td>
+                <td>                    
+                    Please read the application note on <a href="tableAliases.html">table aliases</a> for more information.
+                </td>
+            </tr>
+            <tr>
+                <td>
+					<input name="logsql" type=radio value=no id=nolog onclick="update()"/ >Do not log SQL statements.<br/>
+                    <input name="logsql" type=radio value=yes id=logsql onclick="update()"/ >Log SQL statements to C:\Windows\Temp\qbdODBC.log or /tmp/qdbODBC.log on Linux.<br/>                    
+                </td>
+                <td>                    
+                    Logging of SQL statements goes to the file <strong>C:\windows\temp\qdbODBC.log</strong> on computers running MS Windows. Otherwise the log file is <strong>/tmp/qdbODBC.log</strong> on Linux
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="logapi" type=radio value=no id=noapilog onclick="update()"/ >Do not log Quickbase API calls.<br/>
+                    <input name="logapi" type=radio value=yes id=logapi onclick="update()"/ >Log Quickbase API calls to C:\Windows\Temp\qbdODBC.log or /tmp/qdbODBC.log on Linux.<br/>                    
+                </td>
+                <td>                    
+                    Logging of Quickbase API calls goes to the file <strong>C:\windows\temp\qdbODBC.log</strong> on computers running MS Windows. Otherwise the log file is <strong>/tmp/qdbODBC.log</strong> on Linux
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="dsncredentials" type=radio value=no id=dsncreds onclick="update()"/ >Use credentials in DSN<br/>
+                    <input name="dsncredentials" type=radio value=yes id=connectionstringcreds onclick="update()"/ >Use credentials in connection string<br/>
+                    
+                </td>
+                <td>                    
+                    Some applications like Tableau Server will specify a connection string with a DSN parameter yet they will also specify UID and PWD parameters in the connection string.
+					Normally the UID parameter (Quickbase username) and PWD (Quickbase password) parameters in the connection string supercede the Quickbase username and password settings
+					in the DSN. This parameter allows you to force QuNect to use the UID and PWD from the DSN even if these parameters exist in the connection string.
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="chunks" type=radio value=no id=nochuncks onclick="update()"/ >For each INSERT or UPDATE statement, process all Quickbase records in one API operation, if possible.<br/>
+						The Quickbase API has an upper limit on the number of bytes allowed in one operation.<br/>
+                    <input name="chunks" type=radio value=yes id=chunks onclick="update()"/ >For each INSERT or UPDATE statement, process all Quickbase records in multiple API operations, if possible.<br/>
+						If the number of bytes to be updated is below the threshold set below then only one API operation will occur.<br/>
+                    <input type=text value="" id=chunksize style=display:none onKeyUp="update();" size=15>
+                </td>
+                <td>                    
+                    The number of bytes you want in a single UPDATE or INSERT operation. You'll need make sure that you set this high enough so that it's greater than the largest number of bytes in a single updated or inserted record.
+					This setting does not limit the number of records that can be processed by one SQL statement.
+					QuNect ODBC for QuickBase will break up a large INSERT or UPDATE statement into multiple Quickbase API calls if a timeout error occurs.
+					However setting an upper limit on the number of bytes in one operation can improve throughput by avoiding errors and retries with smaller batches of records
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="doquerychunks" type=radio value=no id=defaultchuncks onclick="update()"/ >Use the default value of 1000 records per API_DoQuery call.<br/>
+                    <input name="doquerychunks" type=radio value=yes id=customchunks onclick="update()"/ >Use the value below instead of the default value.<br/>
+						Enter the number of records requested per API_DoQuery call..<br/>
+                    <input type=text value="" id=doquerychunksize style=display:none onKeyUp="update();" size=15>
+                </td>
+                <td>                    
+                     If you set this value to high then you QuickBase will respond with error number 75, "View too large". Then QuNect ODBC for QuickBase will try again asking for half the number 
+						of records. This will be repeated until Quickbase stops responding with error 75. This retry process will actually increase the number of API calls per record retrieved rather than minimizing the number of API calls per record retrieved.
+						So the records per API_DoQuery call must be set with caution to make sure you don't encounter error 75. Logging QuNect ODBC for QuickBase API calls will help you determine if you're encountering error 75's.
+                        You can also use the "Optional Advanced Features" "API_DoQuery Chunk Size" setting at the bottom of the DSN dialog to do the same thing.
+                        <img src="i/doQueryChunkSizeDSN.png"/>
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="adminonly" type=radio value=no id=noadminonly onclick="update()"/ >Show me all the tables I have access to.<br/>
+                    <input name="adminonly" type=radio value=yes id=adminonly onclick="update()"/ >Show me only the tables I have admin access to.<br/>                    
+                </td>
+                <td>                    
+                    Some organizations have Quickbase applications that they share company wide and the number of tables a user has access to can be overwhelming.
+					This is a way to limit the lis of tables.
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="allowkeyfieldupdates" type=radio value=no id=nokeyfieldupdates onclick="update()"/ >Do not allow updates to key field values<br/>
+                    <input name="allowkeyfieldupdates" type=radio value=yes id=allowkeyfieldupdates onclick="update()"/ >Allow updates to key field values.<br/>                    
+                </td>
+                <td>                    
+                    If you try to change a key field value with an UPDATE statement QuNect ODBC for QuickBase will create a new record with that key field value unless you choose the lower of the two radio buttons above.
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="ignoredupefieldnames" type=radio value=no id=heeddupefieldnames onclick="update()"/ >Create an error if encountering duplicate field names.<br/>
+                    <input name="ignoredupefieldnames" type=radio value=yes id=ignoredupefieldnames onclick="update()"/ >Ignore duplicate field names.<br/>                    
+                </td>
+                <td>                    
+                    Since some applications balk at duplicate field names without explaining what the problem is, QuNect ODBC for QuickBase by default will report an error if it encounters duplicate field names.
+                </td>
+            </tr>
+			<tr>
+                <td>
+					<input name="followrelationships" type=radio value=no id=follow onclick="update()"/ >Follow relationships to find lookup field properties.<br/>
+                    <input name="followrelationships" type=radio value=yes id=dontfollow onclick="update()"/ >Don't follow relationships and use default field properties for lookup fields.<br/>                    
+                </td>
+                <td>                    
+                    This can be useful to minimize API calls and speedup the establishment of an ODBC connection. However this is at the cost of using default field properties for lookup fields.
+					For instance the source field of a lookup text field might have a max length of 1000 characters. But if the relationships are not followed to discover this setting, then the lookup field text will be truncated to the default
+					text field length of 255 characters.
+                </td>
+            </tr>
+        </table>
+</body>
+</html>
+
+               

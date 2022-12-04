@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Optimizing SQL Server OPENQUERY with INSERT, UPDATE and DELETE</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Optimizing SQL Server OPENQUERY with INSERT, UPDATE and DELETE</p>
+        <p class=normal>If you don't already have a linked server called QUICKBASE, create one using the instructions in the
+        <a href="uiLinkedServer.html">Creating a Linked Server for Quickbase in SQL Server Using the UI</a> application note.
+        The advantage of OPENQUERY is that it passes the SQL statement
+        you supply as its second argument to the linked server you supply as its first argument, directly without modification.
+        You can execute the standard INSERT, UPDATE or DELETE 
+        statements against a linked server by using the <a href="fourPartName.html">four part name</a> syntax like this:</p>
+        <p class=code>
+        <pre>
+        UPDATE QUICKBASE."My Quickbase Application".."b6mpfsxfr" SET checkbox = 1 WHERE checkbox = 0
+        </pre>
+        </p>
+        <p class=normal>
+        However the performance of this kind of statement is poor because SQL Server first does a complete scan of all rows and columns. The exception is
+        the INSERT statement which performs as well using the four part name syntax or the OPENQUERY syntax. In most cases you can use an INSERT statement to 
+		accomplish what an UPDATE statement does. Please read <a href="SQLServerToQuickBase.html">this application note</a> to understand how to use INSERT statements to update
+		existing records. Using an INSERT statement to update records is much faster in the SQL Server environment than using an UPDATE statement. UPDATE statements should only be used
+		when the key field value or values is not known or available.
+        The above UPDATE statement can be passed to Quickbase like this:</p>
+        <p class=code>
+        <pre>
+        UPDATE OPENQUERY(QUICKBASE, 'SELECT checkbox FROM "b6mpfsxfr" WHERE checkbox = 0') SET checkbox = 1
+        </pre>
+        </p>
+		<p class=normal>
+        An even higher performance way of doing this uses a the special <strong>UPDATEOQ</strong> capability of QuNect ODDBC for Quickbase </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM OPENQUERY(QUICKBASE, 'UPDATEOQ "b6mpfsxfr" SET checkbox = 1 WHERE checkbox = 0')
+        </pre>
+        </p>
+		
+        <p class=normal>
+        You can also use this technique with DELETE statements.</p>
+        <p class=code>
+        <pre>
+        DELETE OPENQUERY(QUICKBASE, 'SELECT checkbox FROM "b6mpfsxfr" WHERE checkbox = 0')
+        </pre>
+        </p>
+		<p class=normal>
+		However you will encounter a spurious error:
+		<strong>Cannot fetch a row using a bookmark from OLE DB provider "MSDASQL"</strong>
+		Instead you can use the higher performance special <strong>DELETEOQ</strong> capablility of QuNect ODBC for QuickBase:
+		</p>
+		<p class=code>
+        <pre>
+        SELECT * FROM OPENQUERY(QUICKBASE, 'DELETEOQ FROM "b6mpfsxfr" WHERE checkbox = 0')
+        </pre>
+        </p>		
+        <p class=normal>
+        Here's an example that allows you to pass in parameters at run time</p>        
+        <p class=code>
+        <pre>
+        DECLARE @DateModifiedText nvarchar(128)
+        DECLARE @DateModified datetime
+        SET @DateModified = DATEADD(d,-60,Convert(datetime,GETDATE()))
+        SET @DateModifiedText = (SELECT CONVERT(VARCHAR(23), @DateModified, 121))
+        SET @DateModifiedText = '{ts '''''+ @DateModifiedText + '''''}'
+        DECLARE @tempsql nvarchar(max)
+        set @tempsql = 'SELECT * from OPENQUERY(QUICKBASE,''DELETEOQ from "bc7sd8jg3" WHERE Application_Loan_Status like ''''%ACTIVE%'''' and Date_Created <' + @DateModifiedText  + ' and Type_of_File Not Like ''''%Notarized%'''' '')'
+        EXEC(@tempsql)
+        </pre>
+        </p>
+        <p class=normal>
+        You can also use this technique with INSERT statements. However INSERT statements are not prone to the performance problems encountered with
+        UPDATE and DELETE statements.</p>
+		
+		<p class=normal>
+        You can also use this technique with JOIN statements to join native SQL Server tables with Quickbase tables. </p>
+		<p class=code>
+        <pre>
+		SELECT *
+		FROM [CRM].[dbo].[Projects] a JOIN
+		OPENQUERY(QUICKBASE, 'SELECT * FROM bc45c8xjj WHERE Type = ''customer''') b on 
+		a.[Project ID] = b.[Project_ID]
+		</pre>
+        </p>
+</body>
+</html>
+
+               

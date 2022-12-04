@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Downloading File Attachments from Quickbase into SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=normal>The following two methods cannot be employed simultaneously.</p>
+        <p class=subhead>Downloading File Attachments from Quickbase into SQL Server, Method #1</p>
+        
+        <p class=normal>To create a linked server capable of accessing Quickbase file attachments directly,  create
+        a linked server with the SQL below. But first make sure your <a href="gettingStarted.html">DSNs are configured</a>. Then run the following SQL:</p>
+<p class=code>
+<pre>
+EXEC sp_addlinkedserver
+@server = N'QUICKBASE',
+@srvproduct=N'QuNect',
+@provider=N'MSDASQL',
+@provstr=N'DSN=QuickBase via QuNect;FILE=BINARY;'
+GO
+</pre>
+</p>
+<p class=normal>
+    With the FILE=BINARY option on the connection string all Quickbase file attachment fields will appear as image fields in SQL Server.
+    The user should be cautious when using the
+    FILE=BINARY option. A simple <strong>SELECT *</strong> statement on a Quickbase table with a file attachment field can take a long time to
+    complete if there are many records with files stored in the file attachment field. This results from the fact that all of the files are
+    downloaded and
+    stored in their corresponding SQL Server image fields. You can upload file attachments from SQL Server into Quickbase by using an INSERT or
+    an UPDATE statement. For some examples of dowloading and uploading between SQL Server and Quickbase you can read
+    <a href="mirrorQuickBaseInSQLServer.html">Mirroring a Single Quickbase Table in SQL Server</a> or
+    <a href="SQLSync.html">Synching a Quickbase table in SQL Server</a> or <a href="QuickBaseSQLSync.html">Synching a SQL Server table in Quickbase</a>.
+</p>
+<p class=normal>    
+    Without the FILE=BINARY option on the connection string
+    file attachment fields in Quickbase appear as 255 character varchar fields. The contents of the field is simply the URL of the file
+    attachment. Not the file attachment itself. If you set the value of a file attachment field the QuNect ODBC for QuickBase driver will
+    attempt to look for a local file with a path equal to that value. If such a file is found QuNect ODBC for QuickBase will upload that local file
+    to Quickbase as a file attachment. 
+</p>
+<p class=normal>In a few rare cases on SQL Server 2000 it seems that creating a linked server using the stored procedure <strong>sp_addlinkedserver</strong>
+does not work properly even though
+there is no indication of an error. The resulting linked server just doesn't work.
+The workaround in this situation is to use the <a href="uiLinkedServer.html">UI method of creating a linked server</a>.</p>
+
+<p class=subhead>Downloading File Attachments from Quickbase into SQL Server, Method #2</p>
+        
+        <p class=normal>To create a linked server capable of downloading Quickbase file attachments to a directory on disk, create
+        a linked server with the SQL below. But first make sure your <a href="gettingStarted.html">DSNs are configured</a>. Then run the following SQL:</p>
+<p class=code>
+<pre>
+EXEC sp_addlinkedserver
+@server = N'QUICKBASE',
+@srvproduct=N'QuNect',
+@provider=N'MSDASQL',
+@provstr=N'DSN=QuickBase via QuNect;FILE=DISK;FILEPATH=C:\Quickbase\Directory\To\Download\Files;'
+GO
+</pre>
+</p>
+<p class=normal>
+    With the FILEPATH option on the connection string all Quickbase file attachment fields will be downloaded to the directory specified by the FILEPATH option.
+    The user should be cautious when using the
+    FILEPATH option. A simple <strong>SELECT *</strong> statement on a Quickbase table with a file attachment field can take a long time to
+    complete if there are many records with files stored in the file attachment field. This results from the fact that all of the files are
+    downloaded to disk. You'll find your file attachments downloaded to this directory (C:\Quickbase\Directory\To\Download\Files)
+    with subfolders for each Quickbase table.
+    The files will be in the subfolder corresponding to the table they came from.
+    The name of the subfolders will be the <a href="dbid.html">DBID</a> of the Quickbase table.
+    You can upload file attachments from SQL Server into Quickbase by using an INSERT or
+    an UPDATE statement. For some examples of dowloading and uploading between SQL Server and Quickbase you can read
+    <a href="mirrorQuickBaseInSQLServer.html">Mirroring a Single Quickbase Table in SQL Server</a> or
+    <a href="SQLSync.html">Synching a Quickbase table in SQL Server</a> or <a href="QuickBaseSQLSync.html">Synching a SQL Server table in Quickbase</a>.
+</p>
+<p class=normal>    
+    File attachment fields in Quickbase appear as 255 character varchar fields. The contents of the field is simply the URL of the file
+    attachment. Not the file attachment itself. If you set the value of a file attachment field the QuNect ODBC for QuickBase driver will
+    attempt to look for a local file with a path equal to that value. If such a file is found QuNect ODBC for QuickBase will upload that local file
+    to Quickbase as a file attachment. 
+</p>
+<p class=normal>In a few rare cases on SQL Server 2000 it seems that creating a linked server using the stored procedure <strong>sp_addlinkedserver</strong>
+does not work properly even though
+there is no indication of an error. The resulting linked server just doesn't work.
+The workaround in this situation is to use the <a href="uiLinkedServer.html">UI method of creating a linked server</a>.</p>
+</body>
+</html>
+
+               

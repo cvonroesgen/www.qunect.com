@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Adding a Master Record and a Linked Detail Record</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Adding a Master Record and a Linked Detail Record</p>
+        <p class=normal>A scalar function built in to the QuNect ODBC for QuickBase driver returns the Quickbase built in field, <strong>Record ID#</strong>
+        value of the record most recently created by the current QuNect ODBC for QuickBase connection.
+        This function is called IDENTITY and takes no arguments. Also you can pass two SQL statements to QuNect ODBC for QuickBase.
+        These statements have to be separated by a semicolon. Only the last statement can return a result set.
+        This is an example of a SQL statement that uses the IDENTITY function to create a master record and attach a detail record.
+        The key field of the master record is the built-in field called <strong>Record ID#</strong>. This technique will
+        not work if, and is not necessary, if the key field of the master table is not the built-in field called <strong>Record ID#</strong>.
+        The built-in Quickbase field <strong>Record ID#</strong> can be renamed so it may have another name.
+        </p>
+        <p class=code>
+    <pre> 
+    INSERT INTO "Master Table bce33vr7t" ("Master Text Field")
+    VALUES ('This is the master record');
+    INSERT INTO "Details Table bce33vr7s" ("Detail Text Field", "Reference Field")
+    VALUES ('This is the detail record', {fn IDENTITY()})
+    </pre>
+        </p> 
+	<p class=normal>In SQL Server you can use a statement like this to get the <strong>Record ID#</strong> value of the most recently created record.
+        </p>
+	<p class=code>
+    <pre> 
+	DECLARE @newestRecordID int 
+	SELECT @newestRecordID = Newest_Record_ID from OpenQuery(QUICKBASE, 'SELECT @@identity')
+	PRINT @newestRecordID
+    </pre>
+        </p> 
+    </body>
+</html>
+
+               

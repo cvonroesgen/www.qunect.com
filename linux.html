@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>QuNect ODBC for QuickBase on Linux</p>
+		<div class=bar></div>
+        <p class=subhead>QuNect ODBC for QuickBase® is the world's first ODBC driver for Quick Base®.</p>
+        <p class=normal>
+            QuNect ODBC for QuickBase allows you to access your data stored in Quickbase
+            directly from many Linux applications including Informatica.
+            It works with the unixODBC driver manager but not the DataDirect driver manager. 
+            Although QuNect ODBC for QuickBase functions perfectly with the DataDirect driver
+            manager while it is on trial, once the DataDirect license manager kicks in it 
+            prevents the DataDirect driver manager from working with QuNect ODBC for QuickBase.
+			</p>
+			<p class=normal>	
+			To use QuNect ODBC for QuickBase on Linux you'll need to have curl installed.
+			Use the most <a href="https://curl.haxx.se/changes.html">recent version</a>
+			you are comfortable with provided it is later that 7.16.0.
+			The curl API has been very stable since version 7.16.0 released in 2006.
+			According to the curl <a href="https://ec.haxx.se/libcurl-api.html">web site</a>
+			libcurl promises API stability and guarantees compatibility over time.
+			The last time they changed the API in an non-compatible way was for 7.16.0 in 2006 and they plan to never do it again.
+            </p>
+        <p class=subhead>Download Free Fully Functional 30 Day Trial</p>
+            <div class=download>
+            <table>
+			<tr>
+            <td align=right>
+            <a class=button href="/download/linux/64real/RHEL7/2021/release/libqunect64.so" title="Download Now">
+            <img border=0 src="/i/download-now.png"></a>
+            </td>
+            <td align=right>
+			<img border=0 src="/i/linux.gif">
+			</td>            
+            <td valign=center><p class=normal>for x64 versions of RHEL 7.x Linux using versions of unixODBC equal to or greater than 2.2.12.</p></td>
+            </tr>
+			<tr>
+            <td align=right>
+            <a class=button href="/download/linux/64real/RHEL6/2021/release/libqunect64.so" title="Download Now">
+            <img border=0 src="/i/download-now.png"></a>
+            </td>
+            <td align=right>
+			<img border=0 src="/i/linux.gif">
+			</td>            
+            <td valign=center><p class=normal>for x64 versions of RHEL 6.x Linux using versions of unixODBC equal to or greater than 2.2.12.</p></td>
+            </tr>
+			<tr>
+            <td align=right>
+            <a class=button href="/download/linux/64real/ubuntu/2021/release/libqunect64.so" title="Download Now">
+            <img border=0 src="/i/download-now.png"></a>
+            </td>
+            <td align=right>
+			<img border=0 src="/i/linux.gif">
+			</td>            
+            <td valign=center><p class=normal>for x64 versions of Ubuntu Linux using versions of unixODBC equal to or greater than 2.2.12.</p></td>
+            </tr>
+            </table>
+            </div>
+            <p class=subhead>Installation Instructions</p>
+            <p class=normal>
+                Please download the file <strong>libqunect64.so</strong> by clicking on the download button above.
+                This can be placed in the directory <strong>/usr/lib</strong>. The remaining instructions assume that you have.
+                If you have chosen to place it elsewhere make sure to take that into account when following the instructions below.
+                If you're using the unixODBC driver manager, you can find the location of <strong>odbcinst.ini</strong> and <strong>odbc.ini</strong> by running the command:
+            </p>
+            <p class=code>
+            <pre>
+        odbcinst -j
+            </pre>
+            </p>
+            <p class=normal>
+            Edit the <strong>odbcinst.ini</strong> to add the following three lines:
+   </p>
+<p class=code>
+            <pre>
+[QuickBase]
+Description=QuNect ODBC for QuickBase
+Driver=/usr/lib/libqunect64.so
+            </pre>
+            </p>
+            <p class=normal>
+            then you need to add the following lines to your <strong>odbc.ini</strong> file making sure to replace <strong>yourQuickBaseUsername</strong> with your Quickbase username, 
+            <strong>yourQuickBasePassword</strong> with your Quickbase password, <strong>yourapptokengeneratedbyquickbase</strong> with an application token and
+			<strong>yourcompany.quickbase.com</strong> with your <a href="https://qunect.com/flash/QuickBaseServer.html">QuickBaseServer</a>.
+			Please read the section entitled <strong>Create and assign an application token</strong>
+            on the Quickbase help page entitled <a href="https://help.quickbase.com/user-assistance/app_tokens.html">Application Tokens</a> to learn how to get your application tokens.
+			If you use a <a href="https://help.quickbase.com/api-guide/create_user_tokens.html">user token</a> for your password then you don't need an application token.
+			If you do use a user token for your password then be sure to add the line <strong>pwdispassword=0</strong> to your DSN.
+            </p>
+		<p class=subhead>
+		Using a Password
+		</p>
+            <p class=code>
+            <pre>
+[QuickBaseViaQuNect]
+Driver=QuickBase
+Description=QuNect ODBC for QuickBase
+uid=yourQuickBaseUsername
+pwd=yourQuickBasePassword
+QuickBaseServer=yourcompany.quickbase.com
+apptoken=yourapptokengeneratedbyquickbase
+pwdispassword=1
+</pre>
+        </p>
+		<p class=subhead>
+		Using a User Token
+		</p>
+<p class=code>
+            <pre>
+[QuickBaseViaQuNect]
+Driver=QuickBase
+Description=QuNect ODBC for QuickBase
+uid=yourQuickBaseUsername
+pwd=yourQuickBaseUserToken
+QuickBaseServer=yourcompany.quickbase.com
+pwdispassword=0
+</pre>
+        </p>
+		<p class=normal>
+			The name and value pairs you place in the <strong>odbc.ini</strong> file are the same ones you can put into a
+			<a href="/appnotes/connectionString.html">QuNect ODBC for QuickBase connection string</a>.
+		</p>
+		<p class=normal>
+		To use a proxy server, just set <strong>DETECTPROXY=1</strong> in your odbc.ini file and make sure you have an environment variable called <strong>https_proxy</strong>.
+		</p>
+    </body>
+</html>
+
+               

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Using a CREATE TABLE and ALTER TABLE statement</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Using a CREATE TABLE and ALTER TABLE statement</p>
+        <p class=normal>
+            To create a table in Quickbase you need to specify which application the table should be created in.
+            Each Quickbase application has an <a href="appid.html">appid</a> associated with it.
+            Read the <a href="appid.html">How to Find the APPID of a Quickbase Application</a> to determine the appid of your application.
+            If you wanted to create a table called <strong>CUSTOMERS</strong> in the application whose appid was <strong>bcks8a7y3</strong> you would use the
+            following CREATE TABLE SQL statement:
+        </p>
+<p class=code>
+<pre>
+CREATE TABLE "CUSTOMERS bcks8a7y3"
+(First_Name varchar(50),
+Last_Name varchar(50),
+Address varchar(50),
+City varchar(50),
+Country varchar(25),
+Birth_Date date,
+checkboxField bit,
+fileattachmentField longVarBinary,
+currencyField numeric(16, 2),
+numericField double,
+dateTimeField datetime,
+TimeField time
+) 
+</pre>
+</p>
+<p class=normal>
+            If you want the key field to be something other than the built-in <strong>Record ID#</strong> field you can use the following
+			CREATE TABLE SQL statement to make the Last Name field the key field:
+        </p>
+<p class=code>
+<pre>
+CREATE TABLE "CUSTOMERS bcks8a7y3"
+(First_Name varchar(50),
+Last_Name varchar(50),
+CONSTRAINT DoesNotMatter PRIMARY KEY (Last_Name)
+Address varchar(50),
+City varchar(50),
+Country varchar(25),
+Birth_Date date,
+checkboxField bit,
+fileattachmentField longVarBinary,
+currencyField numeric(16, 2),
+numericField double,
+dateTimeField datetime,
+TimeField time
+) 
+</pre>
+</p>
+<p class=normal>
+            Once you've created a table with the CREATE TABLE statement you'll need to get its <a href="https://qunect.com/appnotes/dbid.html">DBID</a>.
+			You can do this by executing the following SQL statement and retrieving the first column in the first and only row.
+        </p>
+<p class=code>
+<pre>
+SELECT @@newdbid
+</pre>
+</p>
+<p class=normal>
+            Let's say that the DBID you retrieved with the above SQL statement was <strong>bcks8b8ty</strong>. 
+			If you forgot to set the key field in the CREATE TABLE statement you can use the ALTER TABLE statement to set the key field:
+        </p>
+<p class=code>
+<pre>
+ALTER TABLE bcks8b8ty ADD CONSTRAINT DoesNotMatter PRIMARY KEY (Last_Name)
+</pre>
+</p>
+<p class=normal>
+            You can also create a foreign key, primary key relationship with a CREATE TABLE statement.
+			Let's say that the DBID of your customer table is <strong>bcks8b8ty</strong>. 
+			You can use a CREATE TABLE statement to create an orders table with a foreign key pointing back to the customer table:
+        </p>
+<p class=code>
+<pre>
+CREATE TABLE "ORDERS bcks8a7y3"
+(Customer_Last_Name varchar(50),
+CONSTRAINT DoesNotMatter FOREIGN KEY (Customer_Last_Name) REFERENCES CUSTOMERS (DoesNotMatter)
+Amount double,
+Date date,
+TaxExempt bit,
+TimeOfOrder time
+) 
+</pre>
+</p>
+<p class=normal>
+            Let's say that the DBID of the Orders table is <strong>bcks8b8tz</strong>. 
+			If you forgot to add the foreign key field in the CREATE TABLE statement you can use the ALTER TABLE statement to create it and set it as the foreign key field:
+        </p>
+<p class=code>
+<pre>
+ALTER TABLE bcks8b8tz ADD Customer_Last_Name float
+ALTER TABLE bcks8b8tz ADD CONSTRAINT DoesNotMatter FOREIGN KEY (Customer_Last_Name) REFERENCES CUSTOMERS (DoesNotMatter)
+</pre>
+</p>
+</body>
+</html>

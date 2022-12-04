@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Mirror a Quickbase Table to a SQL Server Table with one SQL Statement</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Mirror a Quickbase Table to a SQL Server Table with one SQL Statement</p>
+        <p class=normal>
+        The basic idea here is that there exists a Quickbase table that is a mirror to a table in SQL Server. Records originate in SQL Server and are 
+        periodically pushed out from SQL Server to Quickbase. When an existing record in SQL Server changes then the intention is that
+        the corresponding record in Quickbase should be updated to reflect those changes when the next push is made. The pushing of new records and
+        updating of new records can be accomplished with a single <strong>INSERT</strong> statement!
+        This application note assumes that there is a single field that uniquely identifies each record in SQL Server. For the
+        purposes of this application note we will call this field <strong>SQLServerKey</strong>. We will also assume that the key field of the
+        Quickbase table is not the built-in field called <strong>Record ID#</strong> or that there is a field whose unique property has been checked. 
+		Whether it's the key field or just a field whose unique property is checked, we'll call it <strong>QDBKey</strong>. We will assume this field
+        called <strong>QDBKey</strong> is of the same type or a 
+        compatible type to the SQL Server field called <strong>SQLServerKey</strong>. The <strong>INSERT</strong> statement will look like this:
+        </p>
+<p class=code>
+<pre>
+INSERT INTO QUICKBASE."ACME_Pipeline".."Customers_bbsd23jlm" ("QDBKey", "First_Name", "Last_Name", "Address", "City", "State", "Country") SELECT "SQLServerKey", "FirstName", "LastName", "Address", "City", "State", "Country" FROM dbo.Customers 
+</pre>
+</p>
+<p class=normal>
+        You can add a <strong>WHERE</strong> clause to the SQL statement above so that only records that have been modified since the last synchronization will be sent over to Quickbase.
+        This might look something like this:
+        </p>
+<p class=code>
+<pre>
+INSERT INTO QUICKBASE."ACME_Pipeline".."Customers_bbsd23jlm" ("QDBKey", "First_Name", "Last_Name", "Address", "City", "State", "Country") SELECT "SQLServerKey", "FirstName", "LastName", "Address", "City", "State", "Country" FROM dbo.Customers WHERE "DateModifiedinSQLServer" > @SQLServerLastModifiedTime
+</pre>
+<p class=normal>
+        This <strong>INSERT</strong> statement obviously does not take care of deleting records in Quickbase that no longer exist in SQL Server.
+		Also notice that the Quickbase field names have all non-alphanumeric characters replaced with underscores. This is the default behavior 
+		with QuNect ODBC for QuickBase as it prevents problems with interfacing with other database systems like SQL Server that are not as liberal
+		with the characters that are allowed in field names.
+        </p>
+</p>
+</body>
+</html>
+
+               

@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Tips for Writing SQL Statements for QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Writing SQL Statements for QuNect ODBC for QuickBase</p>
+        <p class=normal>
+            Make sure to refer to the <a href="sqlSyntax.html">SQL Syntax</a> application note as well as the application notes on the available <a href="timeFunctions.html">date/time</a>, <a href="numericFunctions.html">numeric</a> and <a href="convertFunction.html">conversion</a> functions.
+            You should enclose all your column names, column aliases and table names in double quotes.
+            So for instance you would write a simple select statement like this:
+        </p>       
+        <p class=code>
+        <pre>
+        SELECT "Column Name" "Column Alias" FROM "Table Name bbsd23jlm"
+        </pre>
+        </p>
+        <p class=normal>   
+        Table names should end with the <a href="dbid.html">DBID</a> of the table as the last word in the table name. You can use just the DBID itself as the table name if you wish.
+        You can use the column names as they appear in Quickbase. However if you do a SELECT * on a table the column names that you'll see
+        in your result set may have all special characters (everything except letters, numbers and spaces) replaced with underscores,
+        depending on the <a href="fields.html">setting in your DSN</a> or <a href="connectionString.html">connection string</a>.
+        Each column in Quickbase has an alternate name that never changes.
+        The alternate name always starts with the characters <strong>fid</strong> and finishes with the <a href="fid.html">FID</a>
+        of the field. So you could write a SQL statement like this:
+        </p>
+        <p class=code>
+        <pre>
+        SELECT "fid19" FROM "Table Name bbsd23jlm"
+        </pre>
+        </p>
+        <p class=normal>   
+        The advantage of using the alternate name is that you can change the name of a field in Quickbase and your SQL statement will continue to work. As long
+        as the field isn't deleted the alternate name will always work. Unfortunately the alternate name is completely useless in telling you what the
+        field is intended for. You have no way of knowing what type of field it is (date, number, text, etc.) or what its purpose is. You can use SQL columns aliases to get around
+        this problem. So if <strong>fid19</strong> is the alternate name for a field called <strong>Start Date</strong> then you would probably want to write your SQL statement like this:
+        </p>
+        <p class=code>
+        <pre>
+        SELECT "fid19" "Start Date", "fid20" "End Date", "fid12" "First Name", "fid14" "Last Name" FROM "Table Name bbsd23jlm"
+        </pre>
+        </p>
+        <p class=subhead>Joins</p>
+        <p class=normal>   
+        QuNect ODBC for QuickBase supports two of the four kinds of joins.
+        The <strong>INNER</strong> and <strong>LEFT OUTER</strong> joins.
+        A inner join is where there is a matching value in each joined record. In a left outer join
+        the result set of the join contains at least one record from the table on the "left" even
+        if there are no matching records in the table on the "right". Left and right are determined
+        by the order the tables first appear in the SQL statement. Here are some examples of an inner join.
+        The first example is between just two tables. The second example does a join across three tables using
+        only WHERE clauses. The third example uses the JOIN keyword to report on three tables. By continuing to
+        nest paretheses you can join together as many tables as you like.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "Projects bcg9m2wqz" INNER JOIN "Time Log bcg9m2wqw" ON "Projects bcg9m2wqz"."Record ID#" = "Related Project"
+        
+        SELECT bcg9m2wqt.fid3 FROM bcg9m2wqt, bcg9m2wqv, bcg9m2wqw WHERE bcg9m2wqt.fid3 = bcg9m2wqv.fid52 AND bcg9m2wqv.fid3 = bcg9m2wqw.fid25 
+
+        SELECT bcg9m2wqt.fid3 FROM bcg9m2wqt INNER JOIN (bcg9m2wqv INNER JOIN bcg9m2wqw ON bcg9m2wqv.fid3 = bcg9m2wqw.fid25) ON bcg9m2wqt.fid3 = bcg9m2wqv.fid52 
+        </pre>
+        </p>
+        <p class=normal>   
+        This example of a left outer join which will show at least one record for every Project even if there are no related Time Log records.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "Projects bcg9m2wqz" LEFT OUTER JOIN "Time Log bcg9m2wqw" ON "Projects bcg9m2wqz"."Record ID#" = "Related Project"
+        </pre>
+        </p>
+		<p class=normal>   
+        Joins with three or more tables requires that you use parentheses.
+		The syntax looks like this assuming table A has a one to many relationship to table B and table B has a one to many relationship with table C:		
+        </p>
+		<p class=code>
+        <pre>
+        SELECT * FROM A INNER JOIN (B INNER JOIN C ON B.KeyFieldName = C.ForeignKeyFieldName) ON A.KeyFieldName = B.ForeignKeyFieldName
+        </pre>
+		</p>
+        <p class=normal>   
+        With four tables A, B, C and D the syntax looks like this:		
+        </p>
+		<p class=code>
+        <pre>
+        SELECT * FROM A INNER JOIN (B INNER JOIN (C INNER JOIN D ON C.KeyFieldName = D.ForeignKeyFieldName) ON B.KeyFieldName = C.ForeignKeyFieldName) ON A.KeyFieldName = B.ForeignKeyFieldName
+		</p>
+		</pre>
+        <p class=subhead>Where Clauses</p>
+        <p class=normal>
+        LIKE can be used in a WHERE clause to do wildcard matching. The following SQL statement will match all names ending in <strong>Smith</strong>.
+        The percent sign (%) matches any number of characters including no characters. The underscore (_) matches any single character.
+        The match to the percent sign or the underscore character specifically you need to escape them by preceding them with a backslash (\).
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcggj2wqz" WHERE "Name" LIKE '%Smith'
+        </pre>
+        </p>
+        <p class=normal>
+        Date, Date/Time, and Time of Day fields in Quickbase need special attention when used in a <strong>WHERE</strong> clause.
+        For example to retrieve all the records where the BirthDate field is after July 4th, 1976 you would use a SQL statement like this:
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcggj2wqz" WHERE "BirthDate" > {d '1976-07-04'}
+        </pre>
+        </p>
+		<p class=normal>
+        Now let's get fancy and develop a query that brings back all people born in the last thirty days.
+        We will use the <a href="timeFunctions.html"> date and time scalar functions</a> available to us in <a href="sqlSyntax.html">ODBC SQL</a>.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcg9m2npn" WHERE {fn CONVERT("BirthDate", SQL_TIMESTAMP)} > {fn TIMESTAMPADD(SQL_TSI_DAY, -30, {fn CURRENT_TIMESTAMP()})}
+        </pre>
+        </p>
+        <p class=normal>
+        The built-in fields Date Created and Date Modified are Date/Time fields which are know to QuNect ODBC for QuickBase as timestamp fields.
+        For example to retrieve all the records where the Date Created field is after noon on July 4th, 1976 you would use a SQL statement like this:
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcggj2wqz" WHERE "Date Created" > {ts '1976-07-04 12:00:00.000'}
+        </pre>
+        </p>
+        <p class=normal>
+        Let's assume there is a Time of Day field called "BirthTime".
+        To retrieve all the records where the BirthTime field is after 3PM you would use a SQL statement like this:
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcggj2wqz" WHERE "BirthTime" > {t '15:00:00'}
+        </pre>
+        </p>
+        <p class=normal>
+        Now let's get fancy and develop a query that brings back all records that were created in the past.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT * FROM "People bcg9m2npn" WHERE "Date Created" < {fn CURRENT_TIMESTAMP()}
+        </pre>
+        </p>
+        <p class=normal>
+        That wasn't very useful because all records are created in the past. So let's modify that to look for all records
+        created 60 days ago.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT "Date Created" FROM "People bcg9m2wqw" WHERE "Date Created" <  {fn TIMESTAMPADD(SQL_TSI_DAY, -60, {fn CURRENT_TIMESTAMP()})}
+        </pre>
+        <p class=normal>
+        Now how about presenting a Quickbase Date/Time field (in this case "Date Created") as "Friday, September 25 2008".
+        Here's how using the <a href="convertFunction.html">convert function</a>.
+        </p>
+        <p class=code>
+        <pre>
+        SELECT {fn concat({fn concat({fn concat({fn concat({fn concat
+                                                            (
+                                                            {fn dayname("Date Created")},
+                                                            ', '
+                                                            )
+                                                        },
+                                                        {fn monthname("Date Created")}
+                                                        )
+                                                } 
+                                                ,
+                                                ' '
+                                                )   
+                                    }
+                                    ,
+                                    {fn convert({fn dayofmonth("Date Created")}, SQL_CHAR)}
+                                    )
+                        },
+                        {fn
+                                convert
+                                        (
+                                                {fn year("Date Created")}, SQL_CHAR
+                                        )
+                        }
+                    )
+                }
+        from bce33vr7t
+        </pre>
+        </p>
+</body>
+</html>
+
+               

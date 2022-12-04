@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Create a table with all the fields in your Quickbase tables in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Create a table with all the fields in your Quickbase tables in SQL Server</p>
+        <p class=normal>The following stored procedure will create a table in SQL Server called qunect_fields.
+		It will populate this table with one row for every field in all your Quickbase tables.
+        If qunect_fields already exists it will drop (delete) the table and recreate it.</p>
+<p class=code>
+<pre>
+set ANSI_NULLS ON
+set QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Claude von Roesgen
+-- Create date: 3/5/2019
+-- Description:	Create a table with all the fields in your Quickbase tables
+-- =============================================
+-- This stored procedure depends on the existence of a linked server called
+-- Quickbase. To create this linked server run the following SQL:
+--
+-- EXEC sp_addlinkedserver 
+-- @server = 'QuickBase', 
+-- @provider = 'MSDASQL',
+-- @srvproduct = 'QuNect',
+-- @provstr = 'DRIVER={QuNect ODBC for QuickBase};UID=YourQuickBaseEmailOrScreenName;PWD=YourPassword' 
+-- GO
+--
+-- After you have your linked server in place you're ready to run the stored 
+-- procedure below. 
+CREATE PROCEDURE [dbo].[fieldsForAllQuickBaseTables] 
+AS
+BEGIN
+	SET NOCOUNT ON;
+	if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_tables]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	drop table [dbo].[qunect_tables]
+	if exists (select * from sysobjects where id = object_id(N'[dbo].[qunect_fields]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	drop table [dbo].[qunect_fields]
+	CREATE TABLE [dbo].[qunect_tables] (
+		[TABLE_QUALIFIER] [nvarchar] (128) NULL ,
+		[TABLE_OWNER] [nvarchar] (128) NULL ,
+		[TABLE_NAME] [nvarchar] (128) NULL ,
+		[TABLE_TYPE] [nvarchar] (128) NULL ,
+		[REMARKS] [varchar] (254) NULL
+	) ON [PRIMARY]
+
+	INSERT qunect_tables EXEC sp_tables_ex quickbase
+	DECLARE @dbid nvarchar(128)
+	DECLARE table_cursor CURSOR FOR SELECT TABLE_NAME FROM qunect_tables
+	OPEN table_cursor
+	FETCH NEXT FROM table_cursor INTO @dbid
+	WHILE (@@FETCH_STATUS <> -1)
+	BEGIN		
+		IF (@@FETCH_STATUS <> -2)
+		BEGIN
+			PRINT 'Getting columns for ' + @dbid
+			BEGIN
+				BEGIN TRY
+					EXEC('SELECT * INTO [qunect_fields] FROM OPENQUERY(QUICKBASE, ''select '''''+@dbid+''''' as dbid, [label]
+      ,[COLUMN_NAME]
+      ,[fid]
+      ,[base_type]
+      ,[field_type]
+      ,[mode]
+      ,[role]
+      ,[abbreviate]
+      ,[allow_new_choices]
+      ,[allowHTML]
+      ,[appears_as]
+      ,[appears_by_default]
+      ,[append_only]
+      ,[auto_save]
+      ,[blank_is_zero]
+      ,[bold]
+      ,[carrychoices]
+      ,[choices]
+      ,[comma_start]
+      ,[currency_format]
+      ,[currency_symbol]
+      ,[decimal_places]
+      ,[default_kind]
+      ,[default_today]
+      ,[default_value]
+      ,[display_dow]
+      ,[display_graphic]
+      ,[display_month]
+      ,[display_relative]
+      ,[display_time]
+      ,[display_user]
+      ,[display_zone]
+      ,[does_average]
+      ,[does_total]
+      ,[doesdatacopy]
+      ,[fieldhelp]
+      ,[find_enabled]
+      ,[foreignkey]
+      ,[format]
+      ,[formula]
+      ,[hours24]
+      ,[mastag]
+      ,[max_versions]
+      ,[maxlength]
+      ,[nowrap]
+      ,[num_lines]
+      ,[numberfmt]
+      ,[parentFieldID]
+      ,[required]
+      ,[see_versions]
+      ,[sort_as_given]
+      ,[isunique]
+      ,[use_new_window]
+      ,[width]
+      ,[iskey]
+      ,[lusfid]
+      ,[lutfid]
+      ,[snapfid] from "'+@dbid+'~fields"'')')
+	  ALTER TABLE [qunect_fields] ALTER COLUMN dbid nvarchar(256) ; 
+				END TRY
+				BEGIN CATCH
+                    EXEC('INSERT INTO [qunect_fields] SELECT * FROM OPENQUERY(QUICKBASE, ''select '''''+@dbid+''''' as dbid, [label]
+      ,[COLUMN_NAME]
+      ,[fid]
+      ,[base_type]
+      ,[field_type]
+      ,[mode]
+      ,[role]
+      ,[abbreviate]
+      ,[allow_new_choices]
+      ,[allowHTML]
+      ,[appears_as]
+      ,[appears_by_default]
+      ,[append_only]
+      ,[auto_save]
+      ,[blank_is_zero]
+      ,[bold]
+      ,[carrychoices]
+      ,[choices]
+      ,[comma_start]
+      ,[currency_format]
+      ,[currency_symbol]
+      ,[decimal_places]
+      ,[default_kind]
+      ,[default_today]
+      ,[default_value]
+      ,[display_dow]
+      ,[display_graphic]
+      ,[display_month]
+      ,[display_relative]
+      ,[display_time]
+      ,[display_user]
+      ,[display_zone]
+      ,[does_average]
+      ,[does_total]
+      ,[doesdatacopy]
+      ,[fieldhelp]
+      ,[find_enabled]
+      ,[foreignkey]
+      ,[format]
+      ,[formula]
+      ,[hours24]
+      ,[mastag]
+      ,[max_versions]
+      ,[maxlength]
+      ,[nowrap]
+      ,[num_lines]
+      ,[numberfmt]
+      ,[parentFieldID]
+      ,[required]
+      ,[see_versions]
+      ,[sort_as_given]
+      ,[isunique]
+      ,[use_new_window]
+      ,[width]
+      ,[iskey]
+      ,[lusfid]
+      ,[lutfid]
+      ,[snapfid] from "'+@dbid+'~fields"'')')
+				END CATCH
+			END
+		END
+		FETCH NEXT FROM table_cursor INTO @dbid
+	END
+	DEALLOCATE table_cursor   
+END
+</pre>
+</p>
+    </body>
+</html>
+
+               

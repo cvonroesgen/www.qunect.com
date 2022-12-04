@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Sending Errors to a Text File in SQL Server Integration Services (SSIS)</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Sending Errors to a Text File in SQL Server Integration Services (SSIS)</p>
+        <p class=normal>
+            This simple data flow sends data from a flat text file to QuickBase via QuNect ODBC for QuickBase.
+        </p>
+        <img src="i/SSISODBCDataFlow.png">
+        <p class=normal>
+            To get details about your data flow errors you'll need to configure the error output in the ODBC Destination to <strong>Redirect row</strong>.
+        </p>
+        <img src="i/SSISODBCDestinationErrorOutput.png">
+		<p class=normal>
+            Then in your flat file destination map your columns. SSIS will do this automatically for you when you send it to a flat file destination that SSIS is creating for you.
+			The flat file destination will reveal row by row error details! Or it will be empty if your data flow encounters no errors. 
+        </p>
+		<img src="i/SSISODBCDestinationErrorInput.png">
+</body>
+</html>
+
+               

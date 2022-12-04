@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Scalar Date and Time Functions Supported by QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Scalar Date and Time Functions Supported by QuNect ODBC for QuickBase</p>
+        <P>Arguments denoted as <I>timestamp_exp</I> can be the name of a column, the result of another scalar function, or an <I>ODBC-time-escape</I>, <I>ODBC-date- escape</I>, or <I>ODBC-timestamp-escape</I>, where the underlying data type could be represented as SQL_CHAR, SQL_VARCHAR, SQL_TYPE_TIME, SQL_TYPE_DATE, or SQL_TYPE_TIMESTAMP.</P>
+
+<P>Arguments denoted as <I>date_exp</I> can be the name of a column, the result of another scalar function, or an <I>ODBC-date- escape</I> or <I>ODBC-timestamp-escape</I>, where the underlying data type could be represented as SQL_CHAR, SQL_VARCHAR, SQL_TYPE_DATE, or SQL_TYPE_TIMESTAMP.</P>
+
+<P>Arguments denoted as <I>time_exp</I> can be the name of a column, the result of another scalar function, or an <I>ODBC-time-escape</I> or <I>ODBC-timestamp-escape</I>, where the underlying data type could be represented as SQL_CHAR, SQL_VARCHAR, SQL_TYPE_TIME, or SQL_TYPE_TIMESTAMP.</P>
+
+<P>The CURRENT_DATE, CURRENT_TIME, and CURRENT_TIMESTAMP timedate scalar functions have been added in ODBC 3.0 to align with SQL-92.</P>
+
+<P class="fineprint"></P>
+<div class="tablediv"><table cellspacing="0" class="dtTABLE">
+
+<TR VALIGN="top">
+<TH width=39%>Function</TH>
+<TH width=61%>Description</TH>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn CURRENT_DATE( )}</B><BR>
+</TD>
+<TD width=61%>Returns the current date.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn CURRENT_TIME([</B><I>time-precision</I><B>])}</B><BR>
+</TD>
+<TD width=61%>Returns the current local time. The <I>time-precision</I> argument determines the seconds precision of the returned value.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn CURRENT_TIMESTAMP<BR>
+([</B><I>timestamp-precision</I><B>])}</B><BR>
+</TD>
+<TD width=61%>Returns the current local date and local time as a timestamp value. The <I>timestamp-precision</I> argument determines the seconds precision of the returned timestamp.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn CURDATE( )}</B><BR>
+</TD>
+<TD width=61%>Returns the current date.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn CURTIME( )}</B><BR>
+</TD>
+<TD width=61%>Returns the current local time.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn DAYNAME(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns a character string containing the data source&#0150;specific name of the day (for example, Sunday through Saturday or Sun. through Sat. for a data source that uses English, or Sonntag through Samstag for a data source that uses German) for the day portion of <I>date_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn DAYOFMONTH(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the day of the month based on the month field in <I>date_exp</I> as an integer value in the range of 1&#0150;31.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn DAYOFWEEK(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the day of the week based on the week field in <I>date_exp</I> as an integer value in the range of 1&#0150;7, where 1 represents Sunday.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn DAYOFYEAR(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the day of the year based on the year field in <I>date_exp</I> as an integer value in the range of 1&#0150;366.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn EXTRACT(</B><I>extract-field FROM</I> <I>extract-source</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the <I>extract-field</I> portion of the <I>extract-source</I>. The <I>extract-source</I> argument is a datetime or interval expression. The <I>extract-field</I> argument can be one of the following keywords:
+<P>YEAR<BR>
+MONTH<BR>
+DAY<BR>
+HOUR<BR>
+MINUTE<BR>
+SECOND</P>
+
+<P>The precision of the returned value is implementation-defined. The scale is 0 unless SECOND is specified, in which case the scale is not less than the fractional seconds precision of the <I>extract-source</I> field.</P>
+</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn HOUR(</B><I>time_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the hour based on the hour field in <I>time_exp</I> as an integer value in the range of 0&#0150;23.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn MINUTE(</B><I>time_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the minute based on the minute field in <I>time_exp</I> as an integer value in the range of 0&#0150;59.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn MONTH(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the month based on the month field in <I>date_exp</I> as an integer value in the range of 1&#0150;12.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn MONTHNAME(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns a character string containing the data source&#0150;specific name of the month (for example, January through December or Jan. through Dec. for a data source that uses English, or Januar through Dezember for a data source that uses German) for the month portion of <I>date_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn NOW( )}</B><BR>
+</TD>
+<TD width=61%>Returns current date and time as a timestamp value.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn QUARTER(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the quarter in <I>date_exp</I> as an integer value in the range of 1&#0150;4, where 1 represents January 1 through March 31.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn SECOND(</B><I>time_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the second based on the second field in <I>time_exp</I> as an integer value in the range of 0&#0150;59.
+<P>Returns the timestamp calculated by adding <I>integer_exp</I> intervals of type <I>interval</I> to <I>timestamp_exp</I>. Valid values of <I>interval</I> are the following keywords:</P>
+
+<P>SQL_TSI_FRAC_SECOND<BR>
+SQL_TSI_SECOND<BR>
+SQL_TSI_MINUTE<BR>
+SQL_TSI_HOUR<BR>
+SQL_TSI_DAY<BR>
+SQL_TSI_WEEK<BR>
+SQL_TSI_MONTH<BR>
+SQL_TSI_QUARTER<BR>
+SQL_TSI_YEAR</P>
+
+<P>where fractional seconds are expressed in billionths of a second. For example, the following SQL statement returns the name of each employee and his or her one-year anniversary date:</P>
+
+<P>SELECT NAME, {fn <BR>
+TIMESTAMPADD(SQL_TSI_YEAR,<BR>
+1, HIRE_DATE)} FROM <BR>
+EMPLOYEES</P>
+
+<P>If <I>timestamp_exp</I> is a time value and <I>interval</I> specifies days, weeks, months, quarters, or years, the date portion of <I>timestamp_exp</I> is set to the current date before calculating the resulting timestamp.</P>
+
+<P>If <I>timestamp_exp</I> is a date value and <I>interval</I> specifies fractional seconds, seconds, minutes, or hours, the time portion of <I>timestamp_exp</I> is set to 0 before calculating the resulting timestamp.</P>
+
+<P>An application determines which intervals a data source supports by calling <B>SQLGetInfo</B> with the SQL_TIMEDATE_ADD_INTERVALS option.</P>
+</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn TIMESTAMPADD(</B><I>interval</I>, <I>integer-exp</I>, <I>timestamp_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns a timestamp that is the number of intervals of type <I>interval</I> greater or less than <I>timestamp_exp</I> depending on whether <I>integer-exp</I> is positive or negative respectively. Valid values of <I>interval</I> are the following keywords:
+<P>SQL_TSI_FRAC_SECOND<BR>
+SQL_TSI_SECOND<BR>
+SQL_TSI_MINUTE<BR>
+SQL_TSI_HOUR<BR>
+SQL_TSI_DAY<BR>
+SQL_TSI_WEEK<BR>
+SQL_TSI_MONTH<BR>
+SQL_TSI_QUARTER<BR>
+SQL_TSI_YEAR</P>
+
+<P>where fractional seconds are expressed in billionths of a second. For example, the following SQL statement returns records more than 60 days old:</P>
+
+<P>SELECT "Date Created" FROM "People bcg9m2wqw" WHERE "Date Created" <  {fn TIMESTAMPADD(SQL_TSI_DAY, -60, {fn CURRENT_TIMESTAMP()})}</P>
+
+<P>An application determines which intervals a data source supports by calling <B>SQLGetInfo</B> with the SQL_TIMEDATE_DIFF_INTERVALS option.</P>
+</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn TIMESTAMPDIFF(</B><I>interval</I>, <I>timestamp_exp1</I>, <I>timestamp_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the integer number of intervals of type <I>interval</I> by which <I>timestamp_exp2</I> is greater than <I>timestamp_exp1</I>. Valid values of <I>interval</I> are the following keywords:
+<P>SQL_TSI_FRAC_SECOND<BR>
+SQL_TSI_SECOND<BR>
+SQL_TSI_MINUTE<BR>
+SQL_TSI_HOUR<BR>
+SQL_TSI_DAY<BR>
+SQL_TSI_WEEK<BR>
+SQL_TSI_MONTH<BR>
+SQL_TSI_QUARTER<BR>
+SQL_TSI_YEAR</P>
+
+<P>where fractional seconds are expressed in billionths of a second. For example, the following SQL statement returns the name of each employee and the number of years he or she has been employed:</P>
+
+<P>SELECT NAME, {fn <BR>
+TIMESTAMPDIFF(SQL_TSI_YEAR,<BR>
+{fn CURDATE()}, HIRE_DATE)}<BR>
+FROM EMPLOYEES</P>
+
+<P>If either timestamp expression is a time value and <I>interval</I> specifies days, weeks, months, quarters, or years, the date portion of that timestamp is set to the current date before calculating the difference between the timestamps.</P>
+
+<P>If either timestamp expression is a date value and <I>interval</I> specifies fractional seconds, seconds, minutes, or hours, the time portion of that timestamp is set to 0 before calculating the difference between the timestamps.</P>
+
+<P>An application determines which intervals a data source supports by calling <B>SQLGetInfo</B> with the SQL_TIMEDATE_DIFF_INTERVALS option.</P>
+</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn WEEK(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the week of the year based on the week field in <I>date_exp</I> as an integer value in the range of 1&#0150;53.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=39%><B>{fn YEAR(</B><I>date_exp</I><B>)}</B><BR>
+</TD>
+<TD width=61%>Returns the year based on the year field in <I>date_exp</I> as an integer value. The range is data source&#0150;dependent.</TD>
+</TR>
+</table></div>
+</body>
+</html>
+
+               

@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>QuNect ODBC for QuickBase on Mac OSX (Intel)</p>
+		<div class=bar></div>
+        <p class=subhead>QuNect ODBC for QuickBase® is the world's first ODBC driver for Quick Base®.</p>
+        <p class=normal>
+            QuNect ODBC for QuickBase allows you to access your data stored in Quickbase
+            directly from many Macintosh applications.</p>
+        <p class=subhead>Download Free Fully Functional 30 Day Trial</p>
+			
+			<div class=download>
+			<table>
+			<tr>
+				<td>				
+					<a class=button href="/download/mac/2021/libqunect64.so" title="Download for 64 bit MacOSX Intel version 10.5 or higher.">
+						<img border=0 src="i/download-now.png"  title="Download for 64 bit MacOSX Intel version 10.5 or higher.">
+					</a>
+					<img border=0 src="i/mac.gif">					
+				</td>            
+				<td valign=center><p class=normal>for 64 bit MacOSX Intel version 10.5 or higher.</p>
+			</table>
+			</div>
+	
+            <p class=subhead>Installation Instructions</p>
+            <p class=normal>
+                Please download the file <strong>libqunect64.so</strong> by clicking on the download button above.
+                Place the <strong>libqunect64.so</strong> in <strong>/Library/ODBC</strong>.
+            </p>
+            <p class=normal>
+                Go to your <strong>Applications</strong> folder and open the <strong>Utilities</strong> folder.
+                Then double click on the <strong>ODBC Administrator</strong> application to open it up.
+                If you can't find this application you'll have to install it.
+                The <a href="https://support.apple.com/kb/dl895">ODBC Admin Tool</a>
+                is available from Apple.
+                If you use Microsoft Excel then you'll also want to install the 
+                <a href="http://www.iodbc.org/dataspace/iodbc/wiki/iODBC/Downloads">iODBC Driver Manager</a> which is available from <a href="iodbc.org">iODBC.org</a>.
+                Remember that <a href="https://support.microsoft.com/en-us/help/3187505/office-2016-for-mac-64-bit-upgrade">MS Office applications before the 2016 version</a> are all 32 bit applications and will not work with QuNect ODBC for QuickBase.
+                
+			</p>
+			<p class=subhead>Configure the 64 bit driver</p>
+			<p class="normal">
+				The remaining instructions assume that you have downloaded libqunect64.so to <strong>/Library/ODBC</strong>.
+                If you have chosen to place it elsewhere make sure to take that into account when following the instructions below.
+				Newer versions of MacOS will quarantine a file downloaded from the Internet. To remove the quarantine please execute this
+				command
+<p class=code>
+<pre>
+xattr -d com.apple.quarantine /Library/ODBC/libqunect64.so
+</pre>
+</p>
+<p class=normal>
+            You can find the location of <strong>odbcinst.ini</strong> and <strong>odbc.ini</strong> by running the command:
+            </p>
+            <p class=code>
+            <pre>
+odbcinst -j
+            </pre>
+            </p>
+			<p class=subhead>odbcinst.ini</p>
+            <p class=normal>
+            Edit the <strong>odbcinst.ini</strong> file to add the following three lines at the bottom of the file:
+   </p>
+<p class=code>
+<pre>
+[QuickBase]
+Description=QuNect ODBC for QuickBase
+Driver=/Library/ODBC/libqunect64.so
+</pre>
+</p>
+<p class=normal>At the top of your <strong>odbcinst.ini</strong> file you may find a section called <strong>[ODBC Drivers]</strong>.
+Add the line <strong>QuickBase = Installed</strong> at the bottom of that section as shown below.
+</p>
+<p class=code>
+<pre>
+[ODBC Drivers]
+PostgreSQL Unicode               = Installed
+CData ODBC Driver for SharePoint = Installed
+QuickBase = Installed
+</pre>
+</p>
+<p class=subhead>odbc.ini</p>
+            <p class=normal>
+			At the top of your odbc.ini file you may see a section called <strong>[ODBC Data Sources]</strong>. If so make sure to add the line 
+			<strong>QuickBaseViaQuNect = QuickBase</strong> at the bottom of that section as shown below.
+			</p>
+<p class=code>
+<pre>
+[ODBC Data Sources]
+CData SharePoint Sys = CData ODBC Driver for SharePoint
+QuickBaseViaQuNect = QuickBase
+</pre>
+</p>
+<p class=normal>Then you need to add the following lines to the bottom of your <strong>odbc.ini</strong> file making sure to replace <strong>yourQuickBaseUsername</strong> with your Quickbase username, 
+            <strong>yourQuickBasePassword</strong> with your Quickbase password, <strong>yourapptokengeneratedbyquickbase</strong> with an application token and
+			<strong>yourcompany.quickbase.com</strong> with your <a href="https://qunect.com/flash/QuickBaseServer.html">QuickBaseServer</a>.
+			Please read the section entitled <strong>Create and assign an application token</strong>
+            on the Quickbase help page entitled <a href="https://help.quickbase.com/user-assistance/app_tokens.html">Application Tokens</a> to learn how to get your application tokens.
+			If you use a <a href="https://help.quickbase.com/api-guide/create_user_tokens.html">user token</a> for your password then you don't need an application token.
+			If you do use a user token for your password then be sure to add the line <strong>pwdispassword=0</strong> to your DSN.
+            </p>
+		<p class=subhead>
+		Using a Password
+		</p>
+            <p class=code>
+            <pre>
+[QuickBaseViaQuNect]
+Driver=QuickBase
+Description=QuNect ODBC for QuickBase
+uid=yourQuickBaseUsername
+pwd=yourQuickBasePassword
+QuickBaseServer=yourcompany.quickbase.com
+apptoken=yourapptokengeneratedbyquickbase
+pwdispassword=1
+</pre>
+        </p>
+		<p class=subhead>
+		Using a User Token
+		</p>
+<p class=code>
+            <pre>
+[QuickBaseViaQuNect]
+Driver=QuickBase
+Description=QuNect ODBC for QuickBase
+uid=yourQuickBaseUsername
+pwd=yourQuickBaseUserToken
+QuickBaseServer=yourcompany.quickbase.com
+pwdispassword=0
+</pre>
+        </p>
+		<p class=normal>
+			Advanced users may want to add additional key-value pairs.
+			The name and value pairs you place in the <strong>odbc.ini</strong> file are the same ones you can put into a
+			<a href="/appnotes/connectionString.html">QuNect ODBC for QuickBase connection string</a>.
+			Just replace the semicolons with hard returns to convert the connection string into the odbc.ini format.
+		</p>
+		<p class=normal>
+		To use a proxy server, just set <strong>DETECTPROXY=1</strong> in your odbc.ini file and make sure you have an environment variable called <strong>https_proxy</strong>.
+		</p>
+		<p class=normal>                 
+            Microsoft Query as part of Microsoft Excel 2011 requires a unique format for Date and DateTime criteria.
+            Date criteria need to be entered like this:                
+            </p>
+        <p class=code>
+    <pre><strong>&lt;= {d '2014-12-17'}</strong></pre>
+        </p>
+        <p class=normal>
+            DateTime criteria need to be entered like this:<br />
+            <img src="/i/MSQueryMac.png" /><br />
+            You can safely dismiss MS Query popup dialogs like this that complain about the value type.
+            <img src="/i/MSQueryPopup.png" />                
+            </p>
+        <p class=code>
+    <pre><strong>&gt;= {ts '2014-12-17 17:59:59.000'}</strong></pre>
+        </p>
+    </body>
+</html>
+
+               

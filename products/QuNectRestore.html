@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>QuNect Restore</title>
+        <link href='../qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=subhead><img src="/i/QuNect_Restore.png" /> QuNect Restore</p>
+        <div class=bar></div>
+		<p class=subhead>Restore your Quickbase Tables and File Attachments without Limits!</p>
+        <p class=normal>Please install the prerequisite <a href="/download/QuNect.exe">QuNect ODBC for QuickBase</a> first!</p>
+        <p class=normal><a href="/download/QuNectRestore/setup.exe" title="Download Now"><img border=0 src="/i/download-now.png"></a><img border=0 src="/i/win.gif"></p>
+		<p class=normal>
+			<a href="/flash/restore.html"><strong>Please watch this getting started video</strong>&nbsp;<img border=0 src="/i/youtube.png"></a>
+		</p>	
+		<p class=normal>QuNect Restore allows you to restore a Quickbase table from a CSV (comma separated values) file
+        on your local hard drive. QuNect Restore allows you to selectively choose which records are imported. In advance of importing it will check for 
+		missing required values and duplicates in unique fields. QuNect Restore will upload file attachments including all revisions, not just the current
+        revision. In bulk restore mode QuNect Restore traverses a directory of backup files created by <a href="/products/QuNectBackup.html">QuNect Backup</a>,
+		restoring all the CSV files discovered in the directory and relinks restored child records to their restored parent records. 
+        QuNect Restore is available for a 30 day free trial. After the trial expires a license for
+        QuNect ODBC for QuickBase is required. Licensees of QuNect ODBC for QuickBase can use QuNect Restore for free.
+        QuNect Restore requires MS Windows and .NET Framework 4.5.
+        </p> 
+        <p class=subhead>Automating QuNect Restore using Windows Scheduler</p>
+        
+        <p class=normal>
+            <ol>
+            <li>
+            The first step is to install QuNect ODBC for QuickBase from this <a href="http://qunect.com/download/QuNect.exe">link</a>.
+            </li>
+            <li>
+            The second step is to <a href="/download/QuNectRestore/setup.exe">install QuNect Restore</a>
+            from this <a href="/download/QuNectRestore/setup.exe">link</a>.
+            This will make sure that your computer has all the .NET prerequisites and will put a shortcut on 
+            your Start menu. However the <a href="/download/QuNectRestore/QuNectRestore.exe">QuNectRestore.exe</a>
+            executable is buried in some inscrutable location.
+            This makes it hard to configure Windows Scheduler. 
+            </li>
+            <li>
+            So to make it easier you can download
+            <a href="/download/QuNectRestore/QuNectRestore.exe">QuNectRestore.exe</a> from
+            this <a href="/download/QuNectRestore/QuNectRestore.exe">link</a>. Place it on your hard drive
+            where you can browse to it easily. I would recommend putting it in
+            <strong>C:\Program Files\QuNect ODBC for QuickBase</strong> or on 64 bit machines in
+            <strong>C:\Program Files (x86)\QuNect ODBC for QuickBase</strong>. The following instructions will assume you've done so.
+            </li>
+            </ol>
+        </p>
+       
+        
+        <p class=subhead>Windows 7</p>
+        <p class=normal>
+         Open Task Scheduler by clicking <b>Start</b>,
+                    click <b>All Programs</b>, point to <b>Accessories</b>, point to <b>System Tools</b>,
+                    and then click <b>
+                        Task Scheduler</b>.<br />
+                    <br />
+        <ol>
+            <li>On the <strong>Action</strong> menu select <strong>Create Task</strong></li>
+            <li>On the <strong>General</strong> tab give your task a name.</li>
+            <li>on the <strong>Actions</strong> tab click New... and then click <b>Browse</b>,
+                navigate to <strong>C:\Program Files\QuNect ODBC for QuickBase</strong>
+                or on 64 bit machines to
+                <strong>C:\Program Files (x86)\QuNect ODBC for QuickBase</strong> and then click
+                on <b>QuNectRestore</b> and then click <b>Open</b>.</li>
+            <li>In the input box labeled <strong>Add Arguments (optional)</strong> you will add six command line arguments.
+				<ol>
+					<li>The full path to the folder containing the .csv file and the .fids file. You will want to enclose this in double quotes.
+						The path should not end with a trailing backslash.
+						The .fids file needs to have the same name before the extension as the .csv file.
+						The filename (before the .csv or .fids extension) should be the <a href="/appnotes/dbid.html">dbid</a> of the destination table in Quickbase.
+						The first and only line of the .fids file should be a period delimited list of the <a href = "/appnotes/fid.html">fids</a> that each column of the .csv file 
+						should be imported into. To ignore a column in the .csv file pair it with a zero.
+					</li>
+					<li>Quickbase username</li>
+					<li>Quickbase <a href="/flash/UserToken.html">usertoken</a> for the above user</li>
+					<li>The Quickbase host name for your realm. For example <strong>mycompany.quickbase.com</strong></li>
+					<li>A "1" if you need to use a proxy server to connect to the Internet, otherwise "0"</li>
+					<li>A "1" if your .csv files have field names on the first line, otherwise "0"</strong></li>
+				</ol>			
+            </li>
+            <li>You can learn about the other features of Windows Task Scheduler
+                <a href="http://windows.microsoft.com/en-US/windows7/schedule-a-task">here</a>.</li>
+        </ol>
+        </p> 
+		<div class="youtube" >
+
+			<iframe width="1920" height="1080" src="https://www.youtube.com/embed/PGNXLC0hC0s" frameborder="0" allowfullscreen></iframe>				
+
+		</div>
+    </body>
+</html>
+
+               

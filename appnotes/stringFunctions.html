@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Scalar String Functions Supported by QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Scalar String Functions Supported by QuNect ODBC for QuickBase</p>
+        <P>Arguments denoted as <I>string_exp</I> can be the name of a column,<B> </B>a <I>character-string-literal</I>, or the result of another scalar function, where the underlying data type can be represented as SQL_CHAR, SQL_VARCHAR, or SQL_LONGVARCHAR. </P>
+
+<P>Arguments denoted as <I>character_exp</I> are a variable-length character string.</P>
+
+<P>Arguments denoted as <I>start</I>, <I>length</I>, or <I>count</I> can be a <I>numeric-literal</I> or the result of another scalar function, where the underlying data type can be represented as SQL_TINYINT, SQL_SMALLINT, or SQL_INTEGER.</P>
+
+<P>The string functions listed here are 1-based; that is, the first character in the string is character 1. </P>
+
+<P>The BIT_LENGTH, CHAR_LENGTH, CHARACTER_LENGTH, OCTET_LENGTH, and POSITION string scalar functions have been added in ODBC 3.0 to align with SQL-92.</P>
+
+<div class="tablediv"><table cellspacing="0" width=80%>
+
+<TR VALIGN="top">
+<TH width=51%>Function</TH>
+<TH width=49%>Description</TH>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn ASCII(</B><I>string_exp</I><B>)}</B><BR>
+ </TD>
+<TD width=49%>Returns the ASCII code value of the leftmost character of <I>string_exp</I> as an integer.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn BIT_LENGTH(</B><I>string_exp</I><B>)}</B><BR>
+</B></TD>
+<TD width=49%>Returns the length in bits of the string expression.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn CHAR(</B><I>code</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the character that has the ASCII code value specified by <I>code</I>. The value of <I>code</I> should be between 0 and 255; otherwise, the return value is data source&#0150;dependent.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn CHAR_LENGTH(</B><I>string_exp</I><B>)}</B><BR>
+</B></TD>
+<TD width=49%>Returns the length in characters of the string expression, if the string expression is of a character data type; otherwise, returns the length in bytes of the string expression (the smallest integer not less than the number of bits divided by 8). (This function is the same as the CHARACTER_LENGTH function.)</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn CHARACTER_LENGTH(</B><I>string_exp</I><B>)}</B><BR>
+</B></TD>
+<TD width=49%>Returns the length in characters of the string expression, if the string expression is of a character data type; otherwise, returns the length in bytes of the string expression (the smallest integer not less than the number of bits divided by 8). (This function is the same as the CHAR_LENGTH function.)</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn CONCAT(</B><I>string_exp1</I>,<B> </B><I>string_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a character string that is the result of concatenating <I>string_exp2</I> to <I>string_exp1</I>. The resulting string is DBMS-dependent. For example, if the column represented by <I>string_exp1</I> contained a NULL value, DB2 would return NULL but SQL Server would return the non-NULL string.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn DIFFERENCE(</B><I>string_exp1</I>,<B> </B><I>string_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns an integer value that indicates the difference between the values returned by the SOUNDEX function for <I>string_exp1</I> and <I>string_exp2</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn INSERT(</B><I>string_exp1</I>, <I>start</I>, <I>length</I>, <I>string_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a character string where <I>length</I> characters have been deleted from <I>string_exp1</I>, beginning at <I>start</I>, and where <I>string_exp2</I> has been inserted into <I>string_exp,</I> beginning at <I>start</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn LCASE(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a string equal to that in <I>string_exp</I>, with all uppercase characters converted to lowercase.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn LEFT(</B><I>string_exp</I>, <I>count</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the leftmost <I>count</I> characters of <I>string_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn LENGTH(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the number of characters in <I>string_exp,</I> excluding trailing blanks.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn LOCATE(</B><I>string_exp1</I>, <I>string_exp2</I>[, <I>start</I>]<B>)}</B> <BR>
+</TD>
+<TD width=49%>Returns the starting position of the first occurrence of <I>string_exp1</I> within <I>string_exp2</I>. The search for the first occurrence of <I>string_exp1</I> begins with the first character position in <I>string_exp2</I> unless the optional argument, <I>start</I>, is specified. If <I>start</I> is specified, the search begins with the character position indicated by the value of <I>start</I>. The first character position in <I>string_exp2</I> is indicated by the value 1. If <I>string_exp1</I> is not found within <I>string_exp2</I>, the value 0 is returned.
+<P>If an application can call the LOCATE scalar function with the <I>string_exp1</I>, <I>string_exp2</I>, and <I>start</I> arguments, the driver returns SQL_FN_STR_LOCATE when <B>SQLGetInfo</B> is called with an <I>Option</I> of SQL_STRING_FUNCTIONS. If the application can call the LOCATE scalar function with only the <I>string_exp1</I> and <I>string_exp2</I> arguments, the driver returns SQL_FN_STR_LOCATE_2 when <B>SQLGetInfo</B> is called with an <I>Option</I> of SQL_STRING_FUNCTIONS. Drivers that support calling the LOCATE function with either two or three arguments return both SQL_FN_STR_LOCATE and SQL_FN_STR_LOCATE_2.</P>
+</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn LTRIM(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the characters of <I>string_exp</I>, with leading blanks removed.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn OCTET_LENGTH(</B><I>string_exp</I><B>)}</B><BR>
+</B></TD>
+<TD width=49%>Returns the length in bytes of the string expression. The result is the smallest integer not less than the number of bits divided by 8.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn POSITION(</B><I>character_exp </I><B>IN</B> <I>character_exp</I><B>)}</B><BR>
+</B></TD>
+<TD width=49%>Returns the position of the first character expression in the second character expression. The result is an exact numeric with an implementation-defined precision and a scale of 0.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn REPEAT(</B><I>string_exp,</I> <I>count</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a character string composed of <I>string_exp</I> repeated <I>count</I> times.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn REPLACE(</B><I>string_exp1</I>, <I>string_exp2</I>, <I>string_exp3</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Search <I>string_exp1 </I>for<I> </I>occurrences of <I>string_exp2</I>, and replace with <I>string_exp3</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn RIGHT(</B><I>string_exp</I>, <I>count</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the rightmost <I>count</I> characters of <I>string_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn RTRIM(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns the characters of <I>string_exp</I> with trailing blanks removed.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn SOUNDEX(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a data source&#0150;dependent character string representing the sound of the words in <I>string_exp</I>. For example, SQL Server returns a 4-digit SOUNDEX code; Oracle returns a phonetic representation of each word.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn SPACE(</B><I>count</I><B>)}</B> </TD>
+<TD width=49%>Returns a character string consisting of <I>count</I> spaces.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn SUBSTRING(</B><I>string_exp</I>, <I>start</I>, length<B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a character string that is derived from <I>string_exp</I>, beginning at the character position specified by <I>start</I> for <I>length</I> characters.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=51%><B>{fn UCASE(</B><I>string_exp</I><B>)}</B><BR>
+</TD>
+<TD width=49%>Returns a string equal to that in <I>string_exp</I>, with all lowercase characters converted to uppercase.</TD>
+</TR>
+</table></div>
+</body>
+</html>
+
+               

@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Mirroring the Schema of a Single SQL Server Table in Quickbase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Mirroring the Schema of a Single SQL Server Table in Quickbase</p>
+        <p class=normal>The following stored procedure will create a matching table in Quickbase with all of the fields from a SQL Server table.
+		It will also populate the table with all the records from SQL Server, and it will create a stored procedure that you can run periodically 
+		to keep the Quickbase table in synchronization with your SQL Server data.</p>
+		<p class=normal>
+        It takes five parameters.
+		<ol>
+			<li><strong>@sqlServerTableName</strong>: The name of the SQL Server table.</li>
+			<li><strong>@appDBID</strong>: The <strong><a href="appid.html">appid</a></strong> of the application where you want the Quickbase table to be created.</li>
+			<li><strong>@newTableName</strong>: The name you want to give to the new table that will be created in the Quickbase application.</li>
+			<li><strong>@createDeleteMeField</strong>: Set this to 1 if you want records deleted in SQL Server to get deleted in Quickbase. Otherwise leave it set to zero.</li>
+			<li><strong>@compoundKeyFields</strong>: Leave this blank if your SQL Server table has an integer identity field. If it doesn't then list the field or fields that make up the 
+				key or compound key. If more than one field is used to uniquely identify each record then separate them with commas.</li>
+		</ol>
+        </p>
+<p class=code>
+<pre>
+set ANSI_NULLS ON
+set QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: Claude von Roesgen
+-- Create date: 5/13/2010
+-- Last Modified; 8/12/2022
+-- Description: Mirror table from SQL Server to Quickbase
+-- =============================================
+-- This stored procedure depends on the existence of a linked server called
+-- Quickbase. To create this linked server run the following SQL:
+--
+-- EXEC sp_addlinkedserver 
+-- @server = 'QuickBase', 
+-- @provider = 'MSDASQL',
+-- @srvproduct = 'QuNect',
+-- @provstr = 'DRIVER={QuNect ODBC for QuickBase};UID=YourQuickBaseEmailOrScreenName;PWD=YourPassword'
+-- GO
+-- After you have your linked server in place you're ready to run the stored 
+-- procedure below. 
+IF OBJECT_ID('mirrorSQLServerTableInQuickBase') IS NULL
+    EXEC('CREATE PROCEDURE mirrorSQLServerTableInQuickBase AS SET NOCOUNT ON;')
+GO
+/****** Object:  StoredProcedure [dbo].[mirrorSQLServerTableInQuickBase]    Script Date: 8/12/2022 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[mirrorSQLServerTableInQuickBase] 
+@sqlServerTableName Varchar(255),
+@appDBID Varchar(255),
+@newTableName Varchar(255),
+@createDeleteMeField bit = 0,
+@compoundKeyFields VarChar(1000) = ''
+
+AS
+
+BEGIN
+IF EXISTS (select * from sysobjects where id = object_id(N'[dbo].[qunect_columns]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+	drop table [dbo].[qunect_columns]
+
+    create table [qunect_columns]  
+    (     
+        TABLE_QUALIFIER sysname collate database_default NULL,  
+        TABLE_OWNER sysname collate database_default NULL,  
+        TABLE_NAME sysname  collate database_default NOT NULL,  
+        COLUMN_NAME sysname collate database_default NULL,  
+        DATA_TYPE smallint NOT NULL,  
+        TYPE_NAME sysname  collate database_default NULL,  
+        PRECISION int NULL,  
+        LENGTH int NULL,  
+        SCALE smallint NULL,  
+        RADIX smallint NULL,  
+        NULLABLE smallint NOT NULL,  
+        REMARKS nvarchar(254) collate database_default NULL,  
+        COLUMN_DEF nvarchar(254) collate database_default NULL,  
+        SQL_DATA_TYPE smallint null,  
+        SQL_DATETIME_SUB smallint NULL,  
+        CHAR_OCTET_LENGTH int NULL,  
+        ORDINAL_POSITION smallint,  
+        IS_NULLABLE varchar(254) collate database_default NOT NULL,  
+        SS_DATA_TYPE tinyint null  
+    )  
+INSERT [qunect_columns] EXEC sp_columns @sqlServerTableName
+DECLARE @columnname nvarchar(128)
+DECLARE @constraint nvarchar(128)
+DECLARE @data_type int
+DECLARE @typename nvarchar(128)
+DECLARE @sqltypename nvarchar(128)
+DECLARE @length int
+DECLARE @lengthtext nvarchar(12)
+DECLARE @precision nvarchar(12)
+DECLARE @scale nvarchar(12)
+
+DECLARE @columnlist varchar(8000) = ''
+DECLARE @insertlist varchar(8000) = ''
+DECLARE @SQLinsertlist varchar(8000) = ''
+DECLARE @QDBinsertlist varchar(8000) = ''
+DECLARE @comma nvarchar(1) = ''
+
+DECLARE column_cursor CURSOR FOR SELECT COLUMN_NAME, DATA_TYPE, TYPE_NAME, LENGTH, PRECISION, SCALE FROM [qunect_columns]
+OPEN column_cursor
+FETCH NEXT FROM column_cursor INTO @columnname, @data_type, @sqltypename, @length, @precision, @scale
+WHILE (@@FETCH_STATUS <> -1)
+BEGIN
+	IF (@@FETCH_STATUS <> -2)
+	BEGIN
+		SET @typename = @sqltypename
+		SET @constraint = ''
+		SET @lengthtext = @precision
+		IF @precision > 1000000
+		BEGIN
+			SET @lengthtext = '1000000'
+		END
+		IF @sqltypename = 'datetime2' or @sqltypename = 'smalldatetime' or @sqltypename = 'datetimeoffset'
+		BEGIN
+			SET @typename = 'datetime' 
+		END
+		IF @sqltypename = 'text' or @sqltypename LIKE '%char%'  or @sqltypename = 'ntext' or  @sqltypename = 'hierarchyid' or @sqltypename = 'uniqueidentifier' or @sqltypename = 'xml'
+		BEGIN
+			SET @typename = 'varchar'
+		END
+		IF @sqltypename = 'int' or @sqltypename = 'decimal' or @sqltypename = 'smallint' or @sqltypename = 'float' or @sqltypename = 'real' or @sqltypename LIKE '%money%' or @sqltypename = 'bigint' or @sqltypename = 'tinyint' or @sqltypename LIKE '%quan%'
+		BEGIN
+			SET @typename = 'DOUBLE'
+		END
+		IF @sqltypename = 'binary' or @sqltypename = 'image' or @sqltypename = 'varbinary'
+		BEGIN
+			SET @typename = 'LONGVARBINARY'
+		END
+		IF @sqltypename = 'int identity'
+		BEGIN
+			SET @typename = 'DOUBLE'
+			SET @constraint = ', CONSTRAINT constraintname PRIMARY KEY ("' + @columnname + '") '
+		END
+		SET @columnlist = @columnlist + @comma + '"' + @columnname + '" ' + @typename
+		IF @typename = 'varchar'
+		BEGIN
+			SET @columnlist = @columnlist + '(' + @lengthtext + ')'
+		END
+		IF @typename = 'numeric'
+		BEGIN
+			SET @columnlist = @columnlist + '(' + @precision + ',' + @scale  + ')'
+		END
+		SET @columnlist = @columnlist + @constraint
+		SET @insertlist = @insertlist + @comma + '"' + @columnname + '"'
+		SET @comma = ','
+	END
+	FETCH NEXT FROM column_cursor INTO  @columnname, @data_type, @sqltypename, @length, @precision, @scale
+END
+DECLARE @deletemefield nvarchar(40) = ''
+IF @createDeleteMeField = 1
+BEGIN
+	SET @columnlist = @columnlist + ', delete_me bit'
+	SET @deletemefield = ', delete_me'
+END
+
+SET @SQLinsertlist = @insertlist
+SET @QDBinsertlist = @insertlist 
+
+SET @compoundKeyFields = REPLACE(@compoundKeyFields, ', ', ',')
+SET @compoundKeyFields = REPLACE(@compoundKeyFields, ' ,', ',')
+
+IF @compoundKeyFields <> '' and @constraint = '' and CHARINDEX(',', @compoundKeyFields) > 0
+BEGIN
+	DECLARE @compoundKeyFieldName nvarchar(4000) = REPLACE(@compoundKeyFields, ',', '_')
+	SET @compoundKeyFieldName =  REPLACE(@compoundKeyFieldName, ' ', '')
+	SET @columnlist = @columnlist + ', "' + @compoundKeyFieldName + '" varchar (1000), CONSTRAINT constraintname PRIMARY KEY ("' + @compoundKeyFieldName + '") '
+	SET @SQLinsertlist = @SQLinsertlist + @comma + 'CONCAT("' + REPLACE(@compoundKeyFields, ',', '",''-'',"') + '")'
+	SET @QDBinsertlist = @QDBinsertlist + @comma + '"' + @compoundKeyFieldName + '"'
+END
+
+DEALLOCATE column_cursor
+DECLARE @qSQL varchar(8000)
+SET @qSQL = 'SELECT * FROM OPENQUERY(QUICKBASE, ''CREATEOQ TABLE "' + @newTableName + ' ' + @appDBID + '"('+ REPLACE(@columnlist, '''', '''''') + ')'')'
+PRINT @qSQL
+EXEC(@qSQL)
+
+
+DECLARE @newDBID nvarchar(18)
+SELECT @newDBID = dbid from OpenQuery(QUICKBASE, 'SELECT @@newdbid')
+
+IF CHARINDEX(',', @compoundKeyFields) = 0 AND @compoundKeyFields <> ''
+BEGIN TRY
+	SET @qSQL = 'SELECT * FROM OPENQUERY(QUICKBASE, ''ALTEROQ TABLE ' + @newDBID + ' ADD CONSTRAINT DoesNotMatter PRIMARY KEY (' + @compoundKeyFields + ')'')'
+	PRINT @qSQL
+	EXEC(@qSQL)
+END TRY
+BEGIN CATCH
+	PRINT 'Could not set the primary key to ' + @compoundKeyFields + ' because ' + ERROR_MESSAGE()
+	PRINT 'You must have QuNect ODBC for QuickBase 6.21.9.76 or greater'
+END CATCH
+
+SET @qSQL = 'INSERT INTO OPENQUERY(QUICKBASE,''SELECT ' + REPLACE(@QDBinsertlist, '''', '''''') + @deletemefield +' FROM "' + @newDBID + '"'') SELECT ' + @SQLinsertlist
+
+IF @createDeleteMeField = 1
+BEGIN
+	SET @qSQL = @qSQL + ', 0'
+END
+SET @qSQL = @qSQL + ' FROM [' + @sqlServerTableName + ']'
+
+PRINT @qSQL
+EXEC(@qSQL)
+
+DECLARE @spSQL varchar(8000) = 'CREATE PROCEDURE [Sync ' + @sqlServerTableName + ' in QuickBase]' + CHAR(10) + 'AS' + CHAR(10) + 'BEGIN' + CHAR(10)
+IF @createDeleteMeField = 1
+BEGIN
+	SET @spSQL = @spSQL + 'BEGIN'  + CHAR(10) 
+	SET @spSQL = @spSQL + 'SELECT * FROM OPENQUERY(QUICKBASE , ''UPDATEOQ ' + @newDBID + ' SET delete_me = 1'')' + CHAR(10) 
+	SET @spSQL = @spSQL + 'END'  + CHAR(10)
+END
+SET @spSQL = @spSQL + 'BEGIN'  + CHAR(10) 
+SET @spSQL = @spSQL + @qSQL + CHAR(10) 
+SET @spSQL = @spSQL + 'END'  + CHAR(10) 
+
+IF @createDeleteMeField = 1
+BEGIN
+	SET @spSQL = @spSQL + 'BEGIN'  + CHAR(10) 
+	SET @spSQL = @spSQL + 'SELECT * FROM OPENQUERY(QUICKBASE, ''DELETEOQ FROM ' + @newDBID + ' WHERE delete_me = 1'')' + CHAR(10) 
+	SET @spSQL = @spSQL + 'END'  + CHAR(10) 
+END
+
+SET @spSQL = @spSQL + 'END' 
+BEGIN TRY
+	EXEC('DROP PROCEDURE [Sync ' + @sqlServerTableName + ' in QuickBase]')
+END TRY
+BEGIN CATCH
+	PRINT 'CREATING PROCEDURE [Sync ' + @sqlServerTableName + ' in QuickBase]'
+END CATCH
+PRINT @spSQL
+EXEC(@spSQL)
+
+END
+</pre>
+</p>
+    </body>
+</html>
+
+               

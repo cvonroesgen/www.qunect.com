@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>My Licenses for QuNect Products</title>
+        <link href='../qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+		<script src="/buy/js/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+		<script type="text/javascript">
+        $(init);
+		function init()
+        {
+		var NameValues = getUrlVars();
+		
+		$("#username").keypress(function (e) {
+		  if (e.which == 13) {
+			$("#display").trigger("click");
+			return false;
+		  }
+		});
+		
+		
+        $("#display").click(
+            function()
+                {
+				$("#error").text("");
+				var username = $("#username").val();
+				if(username != username.toLowerCase())
+					{
+					username = username.toLowerCase();
+					$("#username").val(username);
+					$("#error").text("Please make sure to enter your username using only lowercase letters in your DSN or connection string.");
+					}
+				$("#pleasewait").show();
+				$("#licenses").empty();
+                $("#results").hide();
+				$.ajax("https://api.qunect.com/key", {method:"POST", data:'{"username":"' + username + '"}', success:function(response, txtStatus, jqXHR) {
+					if(response.errorMessage)
+						{
+						$("#pleasewait").hide();
+						$("#error").text(response.errorMessage);
+						return;
+						}
+					var ownsCurrentProduct = {};
+					var ownsObsoleteProduct = {};
+					for(var index in response.licenses)
+						{
+						var product = response.licenses[index].product;
+						var productNoYear = product.replace(/\d\d\d\d/, "");
+						var state = response.licenses[index].state;
+						if(state.match(/license/i))
+							{
+							if(product.match(new RegExp(response.currentProductYear)))
+								{
+								ownsCurrentProduct[productNoYear] = true;
+								}
+							else
+								{
+								ownsObsoleteProduct[productNoYear] = true;
+								}
+							}
+						}
+					for(var index in response.licenses)
+						{
+						var product = response.licenses[index].product;
+						var productNoYear = product.replace(/\d\d\d\d/, "");
+						var state = response.licenses[index].state;
+						var jRow = $("<tr>");
+						if(state.match(/license/))
+							{
+							jRow.css({backgroundColor:"lightgreen"});
+							}
+						else if(state.match(/expire/))
+							{
+							jRow.css({backgroundColor:"#ff8080"});
+							}
+						else if(state.match(/left/))
+							{
+							jRow.css({backgroundColor:"lightyellow"});
+							}
+						else
+							{
+							jRow.css({backgroundColor:"lightgrey"});
+							}
+						
+						jRow.append($("<td>").text(response.licenses[index].licenseNo));
+						jRow.append($("<td>").text(product));
+						jRow.append($("<td>").text(state));
+						jRow.append($("<td>").text(response.licenses[index].key));
+						jRow.append($("<td>").append($("<a>").attr("href", response.licenses[index].installer).text('download')));
+						var partNumber = productToPartNumber(product, ownsObsoleteProduct[productNoYear]);
+						var purchaseText = "Buy...";
+						if(partNumber.match(/U/) || ownsObsoleteProduct[productNoYear])
+							{
+							purchaseText = "Upgrade...";
+							}
+						var jCell = $("<td>");
+						if(!ownsCurrentProduct[productNoYear])
+							{
+							jCell.append($("<a>").attr("href", "/buy/?username=" + username + "&partnumber=" + partNumber).text(purchaseText));
+							}
+						jRow.append(jCell);
+						$("#licenses").append(jRow);
+						}
+					$("#pleasewait").hide();
+					$("#results").show();
+					}});
+                }        
+			);
+		if(NameValues.username)
+			{
+			$("#username").val(NameValues.username.toLowerCase());
+			$("#display").trigger('click');
+			}
+        }
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+				vars[key] = value;
+			});
+			return vars;
+		}
+		function productToPartNumber(product, ownsObsoleteProduct)
+			{
+			if(product.match(/linux/i))
+				{
+				if(ownsObsoleteProduct)
+					{
+					return "QOUQLINX";
+					}
+				else
+					{
+					return "QOFQLINX";
+					}
+				}
+			else if(product.match(/macintosh/i))
+				{
+				if(ownsObsoleteProduct)
+					{
+					return "QOUQMOS";
+					}
+				else
+					{
+					return "QOFQMOS";
+					}
+				}
+			else if(product.match(/server/i))
+				{
+				if(ownsObsoleteProduct)
+					{
+					return "QOUQWINS";
+					}
+				else
+					{
+					return "QOFQWINS";
+					}
+				}
+			else
+				{
+				if(ownsObsoleteProduct)
+					{
+					return "QOUQWIND";
+					}
+				else
+					{
+					return "QOFQWIND";
+					}
+				}
+			}
+        </script>       
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>My Licenses for QuNect ODBC for QuickBase</p>
+        
+		<div class=bar></div>
+        
+		<p class=normal>
+			<table>
+				<tr>
+					<td>
+						<strong>Email address (or Quickbase screen name)</strong>
+					</td>
+					<td>
+						<input size=40 type=email id=username name=username value="">
+					</td>
+					<td><button id="display">Display licenses</button></td>
+					<td><span id="pleasewait" style="display:none"><img src="/buy/i/pleasewait.gif" /></span></td>
+				</tr>			
+			</table>
+			<table id="results" style="display:none">
+				<thead>
+					<tr style="background-color:lightgrey">
+						<th>License No.</th>
+						<th>Product</th>
+						<th>License State</th>
+						<th>License Key (only for low latency requirements and high security environments)</th>
+						<th>Installer</th>
+						<th>Purchase</th>
+					</tr>
+				</thead>
+				<tbody id="licenses" ></tbody>
+			</table>
+        </p>    
+        <p class=normal><span id="error" style="color:red"></span></p>
+    </body>
+</html>
+
+               

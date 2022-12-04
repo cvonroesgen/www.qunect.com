@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>12175 WinHTTPSendRequest A security error occurred</title>
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy">Purchase</a>
+        </div>
+		<div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>12175 WinHTTPSendRequest A security error occurred</p>
+
+        <p class=normal>This means your Windows operating system has not been configured for TLS 1.2. You do not need to upgrade QuNect ODBC for QuickBase to achieve compatibility with TLS 1.2.
+		</p>
+
+
+
+
+		
+<p class="normal">Windows operating systems support two HTTP stacks called WinINet and WinHTTP.
+    QuNect ODBC for QuickBase uses the WinHTTP stack because it is often called upon to run within a service. 
+    WinINet is exclusively for desktop applications like Internet Explorer. So although your desktop applications, 
+    like browsers, work with TLS 1.2, that doesn't mean that your WinHTTP stack is configured to work with TLS 1.2. 
+    To configure your Windows operating system's WinHTTP stack for &nbsp;<span class="il">TLS</span>&nbsp;1.2, 
+    run Windows Update and make sure all updates have been installed.
+    Then navigate to
+    <a href="https://support.microsoft.com/en-us/help/3140245/update-to-enable-tls-1-1-and-tls-1-2-as-a-default-secure-protocols-in#easy" target="_blank">
+        this page
+    </a>
+    &nbsp;and scroll down to the "East Fix" subheadng. In the paragraph below click on the "here" link to download the Easy Fix installer.
+    Running this installer will modify your registry settings to enable TLS 1.2.
+    </p>
+
+    </body>
+</html>
+
+               

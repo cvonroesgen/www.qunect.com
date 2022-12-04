@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Inserting and Adding Records to a Quickbase Table from VBScript</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Inserting and Adding Records to a Quickbase Table from VBScript</p>
+        <p class=normal>This will insert several records into the table with a DBID of bce33vr7t.
+        You can find the DBID of your Quickbase table by reading the
+        <a href="dbid.html">How to Find the DBID of a Quickbase Table</a> application note.
+        </p>
+    <p class=code>
+    Quickbase behaves a little differently from most databases when doing inserts. If you specify the
+    value of the key field when doing an insert (which you have to do if the key field is not the built-in 
+    field initially called <strong>Record ID#</strong>), and a record already exists with that key value then
+    no new record is created. Instead the record with the matching key field value is updated with the values
+    in the insert statement.</p>
+    <p class=code>
+    This example uses a parameterized query.
+    </p>
+<pre>
+    dim connString
+    
+    Dim rs
+    
+    set rs = CreateObject("ADODB.RecordSet")
+    rs.CursorLocation = adUseClient
+    
+    Dim OStr
+    dim fStr
+    
+    Set adoComm = CreateObject("ADODB.Command")
+    adoComm.CommandType = adCmdText
+       
+    connString = "DSN=QuickBase via QuNect;"
+    adoComm.ActiveConnection = connString    
+    
+    
+    adoComm.CommandText = sSQL
+    adoComm.Execute , , adExecuteNoRecords
+    
+    sSQL = "INSERT INTO bce33vr7t"
+    sSQL = sSQL & " (""A Text Field"", ""A Number Field"")"
+    sSQL = sSQL & " VALUES (?, ?)"
+    adoComm.Parameters.Append adoComm.CreateParameter("p1", adChar, adParamInput, 255)
+    adoComm.Parameters.Append adoComm.CreateParameter("p2", adDouble, adParamInput, 15)
+    
+    
+    adoComm.CommandText = sSQL
+    
+    'Now you can loop and insert multiple records
+    
+    dim i
+    
+    for i = 1 to 100
+        With adoComm.Parameters
+          .Item("p1").Value = "This is record " & i & " of 100 that were inserted with VB Script"
+          .Item("p2").Value = i
+        End With
+        adoComm.Execute , , adExecuteNoRecords
+    next
+    set adoComm = nothing
+   
+</pre>
+</p>
+</body>
+</html>
+
+               

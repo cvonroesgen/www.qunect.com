@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Minimizing Integration Reads with QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Minimizing Integration Reads with QuNect ODBC for QuickBase</p>
+        <ul>
+            <li>Use a <a href="/flash/UserToken.html">user token in your DSN or connection string instead of a password</a>
+                to eliminate one integration read every time you establish an ODBC connection.
+            </li>
+            <li>Use <a href="/appnotes/SQLServerToQuickBase.html">INSERTs instead of UPDATEs</a>.</li>
+            <li>Use <a href="/flash/systemTables.html">table reports</a> instead of a WHERE clause in SELECT, UPDATE and DELETE statements.</li>
+            <li>Use OpenQuery instead of <a href="fourPartName.html">Four Part Names</a></li>
+            <li>Use <a href="/appnotes/openQuery.html">UPDATEOQ, DELETEOQ with OpenQuery</a> when possible.</li>
+            <li>Use the
+                <a href="/appnotes/connectionString.html#customchunks">DOQUERYCHUNKSIZE</a> connection string parameter to increase the number of records returned 
+                per API_DoQuery API call.
+            </li>
+            <li>Use <a href="/flash/logging.html">QuNect ODBC for QuickBase API and SQL logging</a> temporarily to
+                look for API_DoQuery and API_GenResultsTable API calls and the SQL statements that cause them.
+            </li>
+            </ul>        
+</body>
+</html>
+
+               

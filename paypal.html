@@ -1,0 +1,85 @@
+#!/usr/bin/perl
+
+use strict;
+use Net::SSLeay qw(get_https post_https sslcat make_headers make_form);
+use LWP::UserAgent;
+use URI::Escape;
+ 
+
+my $true = -1;
+my $false = 0;
+
+my $username = "service\@qunect.com";
+my $password = "OffTheGrid";
+my $dbid = "bcks78sj2";
+print "Content-type: text/html\n\n";
+
+# read post from PayPal system and add 'cmd'
+my $query;
+read (STDIN, $query, $ENV{'CONTENT_LENGTH'});
+$query .= '&cmd=_notify-validate';
+ 
+# post back to PayPal system to validate
+my $paypalReturnMessage = postPayPal("www.paypal.com", $query);
+
+
+print $paypalReturnMessage;
+
+my %variable = ();
+# split posted variables into pairs
+my @pairs = split(/&/, $query);
+foreach my $pair (@pairs) {
+ my ($name, $value) = split(/=/, $pair);
+ $value =~ tr/+/ /;
+ $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
+ $variable{$name} = $value;
+}
+
+my %customVariables = ();
+
+foreach my $key ( keys %variable )
+{
+  if($key =~ m/^option_name(\d+)/)
+	{
+	$customVariables{$variable{$key}} = $variable{"option_selection$1"};
+	}
+}
+
+my $licenseID = $customVariables{"License #"};
+
+if ($paypalReturnMessage eq 'VERIFIED')
+	{
+	my $page = getQDB($dbid, "API_EditRecord", $username, $password, "_fid_8=0&rid=$licenseID");
+	}
+
+# my $cVs = "";
+	# foreach my $key ( keys %customVariables )
+		# {
+		# $cVs .= $key . " -> " . $customVariables{$key};		
+		# }
+
+
+	# foreach my $key ( keys %variable )
+		# {
+		# $cVs .= $key . " -> " . $variable{$key};		
+		# }
+		
+# print getQDB("bce33vr7t", "API_AddRecord", "demo\@qunect.com", "NathanLan3", "_fid_6=testing" . uri_escape($licenseID . " custom vars ->  " . $cVs . " from paypal -> " . $query));
+
+exit(0);
+
+
+sub getQDB($$$$$)
+{
+my ($dbid, $action, $username, $password, $querystring) = @_;
+my $url = "/db/" . $dbid . "?a=$action&username=$username&password=$password&$querystring";
+my ($page, $response, %reply_headers) = get_https('qunect.quickbase.com', 443, $url);
+return $page;
+}
+
+sub postPayPal($$)
+{
+my ($server, $querystring) = @_;
+my ($page, $response, %reply_headers) = post_https($server, 443, "/cgi-bin/webscr", make_headers(Host => 'www.paypal.com'), $querystring);
+return $page;
+}

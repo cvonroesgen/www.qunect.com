@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>How to Find the DBID of a Quickbase Table</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>How to Find the DBID of a Quickbase Table</p>
+        <p class=normal>
+        You can find the DBID of your Quickbase table by
+        looking in the address bar of your browser when you're looking at any page of the table.
+        The home page of all Quickbase applications have a DBID that does not refer to any of the tables in the application.
+        You must navigate to a form or view that is specific to your table to cause the proper dbid to appear in your browser's address bar.
+        The DBID is after the "https://yourcompany.quickbase.com/db/" and before the first question mark "?" if there is one.
+        If there is no question mark in the URL the DBID is everything after the "https://yourcompany.quickbase.com/db/"
+        For example the dbid in the following URL:</p>
+            <pre>
+            https://yourcompany.quickbase.com/db/6mztyxu8?act=er&rid=20
+            </pre>
+        <p class=normal>is</p>
+            <pre>
+            6mztyxu8
+            </pre>
+    </body>
+</html>
+
+               

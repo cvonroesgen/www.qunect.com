@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Excel 365 without DSN or Password</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Excel 365 without DSN or Password</p>
+        <p class=normal>To create an Excel 365 spreadsheet you can share with others without sharing your password or requiring them to configure a DSN please follow these steps.
+		</p>
+		<p class=normal>
+		Make sure you have QuNect ODBC 2021 (32 and 64 bit) for QuickBase or later installed on your MS Windows machine.
+		Also anyone you share your spreadsheet with needs to have the same version of QuNect ODBC for QuickBase installed on their machine.
+		They do not need a license as they will be sharing your license.
+		</p>
+		<p class=normal>
+		Connect to an ODBC data source as indicated below.
+		<img src="i/Excel365GetODBCData.png">
+		</p>
+		<p class=normal>Choose the last entry in the list of DSNs which is the "None" choice.
+		<img src="i/Excel365DSNChooseNone.png">
+		</p>
+		<p class=normal>Then open up the "Advanced options" and enter the following into the "Connection string" text box:
+		</p>
+		<p class=code>
+		<pre>
+		USERTOKEN=yourusertoken;QUICKBASESERVER=yourrealm.quickbase.com;Driver={QuNect ODBC for QuickBase}
+		</pre>
+		</p>
+		<p class=normal>
+		make sure to substitute your usertoken and Quickbase realm name.
+		<img src="i/Excel365ConnectionString.png">
+		</p>
+		<p class=normal>On subsequent dialogs you will be prompted for your username. You must enter the username associated with the 
+		usertoken you placed in the connection string. However when prompted for a password you can leave the password text entry box blank.
+		</p>
+</body>
+</html>
+
+               

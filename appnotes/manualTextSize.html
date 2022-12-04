@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>How to Manually set the Size of a Quickbase Field</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>How to Manually set the Size of a Quickbase Field</p>
+        <p class=normal>
+			QuNect ODBC for QuickBase by default truncates single line text fields to 255 characters and multi-line text fields to 65,535 characters.
+            In the case of Quickbase text fields you can set the size of the field that QuNect ODBC for QuickBase presents by 
+            setting the <strong>Max characters</strong> field property.
+            You can read about how to set the <strong>Max characters</strong> field property here: 
+            <a href="http://help.quickbase.com/user-assistance/default.html#set_max_length.html">http://help.quickbase.com/user-assistance/default.html#set_max_length.html</a>.
+        </p>
+        <p class=normal>
+            For other text like fields like URL fields that do not have a <strong>Max characters</strong> field property you can set the
+            size as presented by QuNect ODBC for QuickBase by clicking on the <strong>Settings</strong> link from the application's home page.
+            Then click on <strong>Variables</strong>. Then click on <strong>Create a new variable</strong>.
+            The name of the variable will begin with <strong>QUNECT_TEXT_SIZE_</strong> followed by
+            the <strong><a href="dbid.html">DBID</a></strong> an underscore and then by the
+            field identifier <strong><a href="fid.html">FID</a></strong> of the field. For example:
+        </p>
+        <p class=code>
+        <pre>
+        QUNECT_TEXT_SIZE_bcks8a7y9_34
+        </pre>
+        </p>
+        <p class=normal>
+        The value of the application variable should be the size
+        you would like to specify for the text field. This application variable only effects the size of this text field when accessed through
+        QuNect ODBC for QuickBase. This application variable has no effect on the Quickbase application when accessed through a web browser or through
+        the Quickbase HTTP API. If you set a value greater than 8000 then the field type in SQL Server will become a BLOB and although you can
+		read BLOB fields via linked servers you cannot INSERT or UPDATE BLOB fields via a linked server. This is why QuNect ODBC for QuickBase presents multi-line text fields, by default,
+		as VARCHAR fields truncated to the maximum length of 8000 characters that SQL Server supports for this data type.
+		Another way to control the length of a text field is to set the <strong>Max characters</strong> field property. Setting this property effects the number of 
+		characters that can be inserted via a web browser or through
+        the Quickbase HTTP API as well as through QuNect ODBC for QuickBase. However, with SQL Server, if the <strong>Max characters</strong> property is set to a value greater than 8000
+		QuNect ODBC for QuickBase will still present the field truncated to 8000 characters. To go beyond 8000 chacaters on SQL Server you must use the application variable method described above.
+        </p>
+        <p class=normal>
+        You can find the DBID of a Quickbase table by reading the
+        <a href="dbid.html">How to Find the DBID of a Quickbase Table</a> application note.
+        </p>
+    </body>
+</html>
+
+               

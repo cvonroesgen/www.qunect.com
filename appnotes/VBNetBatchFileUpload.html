@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>VB.Net Console Application for Copying Rows from a SQL Server Table to a Quickbase Table</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+<body>
+	<div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+	<div class=menu>
+		<a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+		<a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+		<a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+		<a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+		<a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+		<a class=menu href="https://qunect.com/buy/">Purchase</a>
+	</div>
+	<div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+	<p class=subhead>VB.Net Console Application for Uploading Files from a Directory to a Quickbase Table</p>
+	<p class=normal>This console application takes five command line arguments.</p>
+	<ul>
+		<li>The first argument is the name of your DSN.</li>
+		<li>The second argument is the directory of your files.</li>
+		<li>The third argument is the <a href="dbid.html">DBID</a> of your Quickbase table.</li>
+		<li>The fourth argument is the <a href="fid.html">FID</a> of the file attachment field.</li>
+		<li>Additional pair of arguments of a <a href="fid.html">FID</a> followed by a value will INSERT into additional fields in the Quickbase table.</li>
+	</ul>
+	<p class=normal>
+		Please note that this code will delete files that have been succesfully uploaded!
+		An example command line setting the field with a FID of 6 to 'AutoUpload' appears below. Notice that text string values must be enclosed in single quotes.
+	</p>
+	<p class=code>
+<pre>
+		C:\QuNect>QuNectFileUpload.exe "QuickBase via QuNect 64 bit" "C:\Users\claude\Downloads" bc45c8xjn 9 6 "'Auto Uploaded'"
+</pre>
+		</p>
+	<p class=normal>
+		Please note that the code below code will delete files that have been succesfully uploaded!
+	</p>
+	<p class=code>
+<pre>
+Imports System.Data.Odbc
+Imports System.IO
+Imports System.Text.RegularExpressions
+Module upload
+    Private Class qdbVersion
+        Public year As Integer
+        Public major As Integer
+        Public minor As Integer
+    End Class
+    Private qdbVer As qdbVersion = New qdbVersion
+    Private dbid As String
+    Private fid As String
+    Private QuNectConnection As OdbcConnection
+    Private fids As String
+    Private fidValues As String
+    Sub Main(ByVal arguments As String())
+        If arguments.Length < 4 Then
+            Console.WriteLine("Please supply at least four command line arguments:")
+            Console.WriteLine("QuNectFileUpload ""DSN"" ""Path\To\Folder"" dbid fid")
+            Exit Sub
+        End If
+        If arguments.Length Mod 2 = 1 Then
+            Console.WriteLine("Please supply an even number of command line arguments.")
+            Exit Sub
+        End If
+        dbid = arguments(2)
+        fid = arguments(3)
+        Dim isFID As Regex = New Regex("^[1-9][0-9]*$")
+        Dim match As Match = isFID.Match(fid)
+        If Not match.Success Then
+            Console.WriteLine("{0} Is not a valid fid.", fid)
+            Exit Sub
+        End If
+        fids = "fid" & fid
+        For i As Integer = 4 To arguments.Length - 1 Step 2
+            fids &= ", fid" & arguments(i)
+            fidValues &= ", " & arguments(i + 1)
+        Next
+        QuNectConnection = getquNectConn("DSN=" & arguments(0))
+        If QuNectConnection Is Nothing Then
+            Exit Sub
+        End If
+        Dim fileFolder As String = arguments(1)
+        If Directory.Exists(fileFolder) Then
+            ' This path is a directory.
+            processFiles(fileFolder)
+        Else
+            Console.WriteLine("{0} is not a valid directory.", fileFolder)
+            Exit Sub
+        End If
+        QuNectConnection.Close()
+    End Sub
+    Private Function getquNectConn(connectionString As String) As OdbcConnection
+        Dim quNectConn As OdbcConnection
+        Try
+            quNectConn = New OdbcConnection(connectionString)
+            quNectConn.Open()
+        Catch excpt As Exception
+            If excpt.Message.StartsWith("Error [IM003]") Or excpt.Message.Contains("Data source name Not found") Then
+                Console.WriteLine("Please install QuNect ODBC For Quickbase from http: //qunect.com/download/QuNect.exe and try again.")
+            Else
+                Console.WriteLine("Could not open ODBC connection with connection string '{0}' because {1}", connectionString, excpt.Message)
+            End If
+            Return Nothing
+            Exit Function
+        End Try
+        Dim ver As String = quNectConn.ServerVersion
+        Dim m As Match = Regex.Match(ver, "\d+\.(\d+)\.(\d+)\.(\d+)")
+        qdbVer.year = CInt(m.Groups(1).Value)
+        qdbVer.major = CInt(m.Groups(2).Value)
+        qdbVer.minor = CInt(m.Groups(3).Value)
+        If (qdbVer.major < 6) Or (qdbVer.major = 6 And qdbVer.minor < 98) Then
+            Console.WriteLine("You are running the {0} version of QuNect ODBC for QuickBase. Please install the latest version from http://qunect.com/download/QuNect.exe", ver)
+            quNectConn.Close()
+            Return Nothing
+            Exit Function
+        End If
+        Return quNectConn
+    End Function
+    Private Sub processFiles(fileFolder As String)
+        Dim fileEntries As String() = Directory.GetFiles(fileFolder)
+        ' Process the list of files found in the directory.
+        Dim fileName As String
+        For Each fileName In fileEntries
+            processFile(fileName)
+        Next fileName
+    End Sub
+    Private Function processFile(fileName As String) As Integer
+        Dim strSQL As String = "INSERT INTO " & dbid & " (" & fids & ") VALUES ('" & fileName & "'" & fidValues & ")"
+        Dim quNectCmd As OdbcCommand = New OdbcCommand(strSQL, QuNectConnection)
+        Dim rowsCreated As Integer = 0
+        Try
+            rowsCreated = quNectCmd.ExecuteNonQuery()
+        Catch excpt As Exception
+            Console.WriteLine("Failed: {0} {1} because: {2}", fileName, strSQL, excpt.Message)
+        Finally
+            quNectCmd.Dispose()
+        End Try
+        If rowsCreated = 1 Then
+            Console.WriteLine("Success: {0}", fileName)
+            System.IO.File.Delete(fileName)
+        End If
+        Return rowsCreated
+    End Function
+End Module
+       
+</pre>
+	</p>
+</body>
+</html>
+
+               

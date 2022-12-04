@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Synching a Quickbase table in SQL Server</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Synching a Quickbase table in SQL Server</p>
+        <p class=normal>The following stored procedure will synch a table from Quickbase to SQL Server.
+        After running this stored procedure the table in SQL Server will be up to date with the table in Quickbase.
+        This stored procedure only modifies the SQL Server table, not the corresponding Quickbase table.
+        If you want to go in the other direction please read <a href="QuickBaseSQLSync.html">Synching a SQL Server table in Quickbase</a>
+        It has only one required parameter: <strong>dbid</strong>. You can find the DBID of a Quickbase table by reading the
+        <a href="dbid.html">How to Find the DBID of a Quickbase Table</a> application note.</p>
+<p class=code>
+<pre>
+GO
+/****** Object:  StoredProcedure [dbo].[SyncQuickBaseTable]    Script Date: 10/21/2008 12:24:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Claude von Roesgen Copyright 2007
+-- Create date: 4/17/2007
+-- Updated:     10/21/2007
+-- Description:	Synchronize a table from Quickbase to SQL Server.
+--				This stored procedure depends on the existance of a linked server called
+--				Quickbase. To create this linked server run the following SQL:
+--
+--					EXEC sp_addlinkedserver 
+--					@server = 'QuickBase', 
+--					@provider = 'MSDASQL',
+--					@srvproduct = 'QuNect',
+--					@provstr = 'DRIVER={QuNect ODBC for QuickBase};UID=claude;PWD=YourPassword' 
+--					GO
+--
+--              After you have your linked server in place you're ready to run the stored 
+--				procedure below. If the SQL Server copy of the table doesn't exist it will be created.
+--				If it does exist then only the records that have been modified since the last
+--				sync will be imported. Records that have been deleted on Quickbase will only
+--				be deleted here on SQL Server if the @deleteLocalOrphanRecords is equal to 1.
+--				If you don't want all the columns from Quickbase you can select a subset of them
+--				by specifying @commaDelimitedFieldList with a comma delimited list
+--				of field names. You must double quote enclose field names that have spaces in them.
+--				For example you must refer to Date Created as "Date Created". You'll have to include
+--				the fields Record ID# and Date Modified in the list. These fields could have been renamed to
+--				other names. You must use the names as they currently are in Quickbase. 
+--				So this would look like this at a minimum:
+--
+--					@ridFieldName = 'Record_ID_',
+--					@dateModifiedFieldName = 'Date_Modified',
+--					@commaDelimitedFieldList = N'"Record_ID_", "Date_Modified"'
+--
+--				Note that the list does not start or end with a comma. Also note that the variables
+--				@ridFieldName and @dateModifiedFieldName do not require enclosing double quotes.
+--				Since field names are easily changed in Quickbase you may want to refer to the fields 
+--				by their field identifiers instead of their field labels. The field identifiers never
+--				change, even when the field name is changed.
+--				How to Find the FID of a Quickbase Field.
+--				So you can set the @commaDelimitedFieldList parameter to:
+--
+--					@ridFieldName = 'fid3',
+--					@dateModifiedFieldName = 'fid2',
+--					@commaDelimitedFieldList = N'fid3, fid2, fid6 as "Product ID", fid7 as Name, fid8 as Desc'
+--
+--				and you'll be insulated from any field name changes made in Quickbase. Note that you cannot
+--				create aliases for the Record ID# field and the Date Modified field. You can however use the 
+--				field identifier nomenclature. The names you provide for the @ridFieldName and @dateModifiedFieldName
+--				variables must be present and unaliased in the @commaDelimitedFieldList variable value unless of
+--				course you use its default value of *.
+-- =============================================
+CREATE PROCEDURE [dbo].[SyncQuickBaseTable] 
+@dbid VarChar(13),
+@ridFieldName VarChar(255) = 'Record_ID_',
+@dateModifiedFieldName VarChar(255) = 'Date_Modified',
+@deleteLocalOrphanRecords bit = 1,
+@commaDelimitedFieldList VarChar(8000) = '*'
+AS
+BEGIN
+
+    DECLARE @tempsql nvarchar(max)
+    DECLARE @localCount int
+    DECLARE @execLocalCount int
+    SET @localCount = 0
+    SET @tempSQL = 'SELECT @execLocalCount = count(*) FROM ' + @dbid
+    DECLARE @parameter nvarchar(1000)
+    SET @parameter = N'@execLocalCount int OUTPUT'
+    BEGIN TRY
+            EXECUTE sp_executesql @tempSQL, @parameter, @execLocalCount = @localCount OUTPUT
+    END TRY
+    BEGIN CATCH
+            PRINT 'Table already gone'
+    END CATCH
+
+
+
+	DECLARE @doesExist int
+	-- See if there is a local copy of the table that already exists.
+	SELECT @doesExist = count(*)  FROM sysobjects WHERE Name = @dbid AND xType= 'U'
+	IF @doesExist = 0 or @localCount = 0
+		BEGIN
+			SET @tempsql = 'DROP TABLE ' + @dbid
+			BEGIN TRY
+				EXEC( @tempsql)
+			END TRY
+			BEGIN CATCH
+				PRINT 'TABLE ALREADY GONE'
+			END CATCH
+		-- No local copy exists so we'll create one and then we're done!
+		
+			EXEC('SELECT * INTO "'+@dbid+'" FROM  OPENQUERY(QUICKBASE, ''SELECT '+@commaDelimitedFieldList+' FROM "'+@dbid+'"'')')
+		END
+	ELSE
+		-- There already was a local copy.
+		BEGIN
+			-- Find the latest date modified of the SQL Server records
+			-- and then do an inner join with Quickbase records to see which SQL Server records have
+			-- changed on the Quickbase server since the last synch. Delete those records here
+			-- in SQL Server and then refetch them from Quickbase and put them back into SQL Server.
+			EXEC('
+			DECLARE @maxDateModified datetime
+			SELECT TOP 1 @maxDateModified = "'+@dateModifiedFieldName+'" FROM "'+@dbid+'" ORDER BY "'+@dateModifiedFieldName+'" DESC
+			DELETE qdbSQLServer FROM 
+				"'+@dbid+'" AS qdbSQLServer
+					INNER JOIN 
+				(SELECT "'+@ridFieldName+'", "'+@dateModifiedFieldName+'" 
+					FROM 
+						OPENQUERY(QUICKBASE, ''SELECT "'+@ridFieldName+'", "'+@dateModifiedFieldName+'" FROM "'+@dbid+'"'')
+					WHERE "'+@dateModifiedFieldName+'" > @maxDateModified)
+				AS qdbInternet 
+				ON qdbSQLServer."'+@ridFieldName+'" = qdbInternet."'+@ridFieldName+'"')
+			EXEC('
+			DECLARE @maxDateModified datetime
+			SELECT TOP 1 @maxDateModified = "'+@dateModifiedFieldName+'" FROM "'+@dbid+'" ORDER BY "'+@dateModifiedFieldName+'" DESC
+			INSERT INTO "'+@dbid+'" SELECT * FROM  OPENQUERY(QUICKBASE, ''select '+@commaDelimitedFieldList+' FROM "'+@dbid+'"'') 
+			WHERE "'+@dateModifiedFieldName+'" > @maxDateModified
+			')
+			if @deleteLocalOrphanRecords = 1
+				-- Now look for all orphaned records using an outer join
+				-- and delete the orphans.
+				BEGIN
+				EXEC('
+					DELETE qdbSQLServer FROM 
+					"'+@dbid+'" AS qdbSQLServer
+						LEFT OUTER JOIN 
+					(SELECT "'+@ridFieldName+'" 
+						FROM 
+							OPENQUERY(QUICKBASE, ''SELECT "'+@ridFieldName+'" FROM "'+@dbid+'"''))
+					AS qdbInternet 
+					ON qdbSQLServer."'+@ridFieldName+'" = qdbInternet."'+@ridFieldName+'"
+					WHERE qdbInternet."'+@ridFieldName+'" IS NULL
+				')
+				END
+		END	
+END
+
+</pre>
+</p>
+    </body>
+</html>
+
+               

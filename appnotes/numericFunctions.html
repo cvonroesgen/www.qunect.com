@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Scalar Numeric Functions Supported by QuNect ODBC for QuickBase</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>Scalar Numeric Functions Supported by QuNect ODBC for QuickBase</p>
+        <P>All numeric functions return values of data type SQL_FLOAT except for ABS, ROUND, TRUNCATE, SIGN, FLOOR, and CEILING, which return values of the same data type as the input parameters.</P>
+
+<P>Arguments denoted as <I>numeric_exp</I> can be the name of a column, the result of another scalar function, or a <I>numeric-litera</I>l, where the underlying data type could be represented as SQL_NUMERIC, SQL_DECIMAL, SQL_TINYINT, SQL_SMALLINT, SQL_INTEGER, SQL_BIGINT, SQL_FLOAT, SQL_REAL, or SQL_DOUBLE.</P>
+
+<P>Arguments denoted as <I>float_exp</I> can be the name of a column, the result of another scalar function, or a <I>numeric-literal</I>, where the underlying data type can be represented as SQL_FLOAT.</P>
+
+<P>Arguments denoted as <I>integer_exp</I> can be the name of a column, the result of another scalar function, or a <I>numeric-literal</I>, where the underlying data type can be represented as SQL_TINYINT, SQL_SMALLINT, SQL_INTEGER, or SQL_BIGINT.</P>
+
+<P>The CURRENT_DATE, CURRENT_TIME, and CURRENT_TIMESTAMP scalar functions have been added in ODBC 3.0 to align with SQL-92.</P>
+
+<P class="fineprint"></P>
+<div class="tablediv"><table cellspacing="0" class="dtTABLE">
+
+<TR VALIGN="top">
+<TH width=34%>Function</TH>
+<TH width=66%>Description</TH>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ABS(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the absolute value of <I>numeric_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ACOS(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the arccosine of <I>float_exp</I> as an angle, expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ASIN(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the arcsine of <I>float_exp</I> as an angle, expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ATAN(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the arctangent of <I>float_exp</I> as an angle, expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ATAN2(</B><I>float_exp1</I>, <I>float_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the arctangent of the <I>x</I> and <I>y</I> coordinates, specified by <I>float_exp1</I> and <I>float_exp2</I>, respectively, as an angle, expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn CEILING(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the smallest integer greater than or equal to <I>numeric_exp</I>. The return value is of the same data type as the input parameter.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn COS(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the cosine of <I>float_exp</I>, where <I>float_exp</I> is an angle expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn COT(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the cotangent of <I>float_exp</I>, where <I>float_exp</I> is an angle expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn DEGREES(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the number of degrees converted from <I>numeric_exp</I> radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn EXP(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the exponential value of <I>float_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn FLOOR(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the largest integer less than or equal to <I>numeric_exp</I>. The return value is of the same data type as the input parameter.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn LOG(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the natural logarithm of <I>float_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn LOG10(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the base 10 logarithm of <I>float_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn MOD(</B><I>integer_exp1</I>, <I>integer_exp2</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the remainder (modulus) of <I>integer_exp1</I> divided by <I>integer_exp2</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn PI( )}</B><BR>
+</TD>
+<TD width=66%>Returns the constant value of pi as a floating-point value.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn POWER(</B><I>numeric_exp</I>, <I>integer_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the value of <I>numeric_exp</I> to the power of <I>integer_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn RADIANS(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the number of radians converted from <I>numeric_exp</I> degrees.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn RAND(</B>[<I>integer_exp</I>]<B>)}</B><BR>
+</TD>
+<TD width=66%>Returns a random floating-point value using <I>integer_exp</I> as the optional seed value.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn ROUND(</B><I>numeric_exp</I>, <I>integer_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns <I>numeric_exp</I> rounded to <I>integer_exp</I> places right of the decimal point. If <I>integer_exp</I> is negative, <I>numeric_exp</I> is rounded to |<I>integer_exp</I>| places to the left of the decimal point.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn SIGN(</B><I>numeric_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns an indicator of the sign of <I>numeric_exp</I>. If <I>numeric_exp</I> is less than zero, &#0150;1 is returned. If <I>numeric_exp</I> equals zero, 0 is returned. If <I>numeric_exp</I> is greater than zero, 1 is returned.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn SIN(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the sine of <I>float_exp</I>, where <I>float_exp</I> is an angle expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn SQRT(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the square root of <I>float_exp</I>.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn TAN(</B><I>float_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns the tangent of <I>float_exp</I>, where <I>float_exp</I> is an angle expressed in radians.</TD>
+</TR>
+
+<TR VALIGN="top">
+<TD width=34%><B>{fn TRUNCATE(</B><I>numeric_exp</I>, <I>integer_exp</I><B>)}</B><BR>
+</TD>
+<TD width=66%>Returns <I>numeric_exp</I> truncated to <I>integer_exp</I> places right of the decimal point. If <I>integer_exp</I> is negative, <I>numeric_exp</I> is truncated to |<I>integer_exp</I>| places to the left of the decimal point.</TD>
+</TR>
+</table></div>
+</body>
+</html>
+
+               

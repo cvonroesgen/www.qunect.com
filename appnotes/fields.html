@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>How QuNect ODBC for QuickBase changes Quickbase Field Names to Make them Compatible with Other Databases</title>
+        <link href='qunect.css' rel='stylesheet' type="text/css" />
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="banner"><img id=logo src=../i/QuNect_Header-logo-2x.png /><span class=tagline>ODBC for QuickBase</span><img id=qspimg src="../i/QBase_Solution-Provider-white-2x.png" /></div>
+        <div class=menu>
+            <a class=menu href="/index.html">Home</a> <span class=vertpipe>|</span>
+            <a class=menu href="/products.html">Products</a> <span class=vertpipe>|</span>
+            <a class=menu href="/appnotes.html">Documentation</a> <span class=vertpipe>|</span>
+            <a class=menu href="/faq.html">FAQ</a> <span class=vertpipe>|</span>
+            <a class=menu href="/support.html">Support</a> <span class=vertpipe>|</span>
+            <a class=menu href="https://qunect.com/buy/">Purchase</a>
+        </div>
+        <div class=bar></div>
+		<p class=headline>Application Note for QuNect ODBC for QuickBase</p>
+		<div class=bar></div>
+        <p class=subhead>How QuNect ODBC for QuickBase changes Quickbase Field Names to Make them Compatible with Other Databases</p>
+        <p class=normal>
+        QuNect ODBC for QuickBase ignores the following types of fields because they are user interface elements that exist for the purpose of either displaying links or embedded tables for the user of a web browser.
+		So the number of fields reported by Quickbase can be greater than the number of fields reported by QuNect ODBC for QuickBase.
+		<ul>
+		<li>Formula - URL</li>
+        <li>Report Link</li>
+		</ul>
+        </p>
+		<p class=normal>
+        QuNect ODBC for QuickBase also substitutes certain characters in field names with the underscore character.
+		Which characters are substituted depends on a setting in the DSN configuration dialog or in your <a href="connectionString.html">connection string</a>.
+		</p>
+		<img src="/appnotes/i/configureFields.png" />
+		<p class=normal>
+		The image above shows a portion of the <a href="/appnotes/i/configure.png">DSN configuration dialog</a> where you configure 
+		the character substitution in field names. The default setting (letters, numbers and underscores, no colons) replaces all but the following characters with underscores.
+		<ul>
+		<li>Letters (a-zA-Z)</li>
+        <li>Numbers other than those occuring as the first character of the field name</li>
+		</ul>
+		</p>
+		<p class=normal>
+		This is the recommended setting because it produces the highest degree of compatablity with other databases.
+		The other settings allow a wider range of characters in the field names at the expense of compatability.
+		All other settings allow numeric characters as the first character of a field name.
+		But when QuNect ODBC for QuickBase replaces field name characters with underscores sometimes two names that were not identical become identical.
+		In this case you can try to use a field character substitution setting that allows a wider range of characters in field names. If this is not 
+		feasible you can create a <a href="https://help.quickbase.com/user-assistance/creating_a_table_view.html">table report</a>
+		that eliminates the duplicates. Then instead of refering to the table you refer to the table report. You can learn how to refer to table reports
+		by <a href="https://qunect.com/flash/systemTables.html">watching this video</a>.
+        </p>
+		<p class=subhead>Duplicate Field Names</p>
+		<p class=normal>
+		Sometimes a Quickbase table will have two fields with the same name. This is rare because Quickbase's user interface doesn't allow you to 
+		give the same name to two fields. The Quickbase HTTP API however does allow you to give a field the same name as another field in the same table.
+		
+		In the case where two fields actually have the same name, best practices dictate that you log in to Quickbase and rename the duplicate fields
+		so they no longer have the same name. However sometimes the manager
+		of the Quickbase application manager will not allow this. As an alternative you can create a <a href="https://help.quickbase.com/user-assistance/creating_a_table_view.html">table report</a>
+		that includes all fields except all but one of the duplicates. Then instead of refering to the table you refer to the table report. You can learn how to refer to table reports
+		by <a href="https://qunect.com/flash/systemTables.html">watching this video</a>.
+	</p>
+    </body>
+</html>
